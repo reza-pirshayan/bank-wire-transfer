@@ -1,0 +1,66 @@
+package com.pirshayan.infrastructure.persistence.achtransferorder.mapper;
+
+import java.util.List;
+
+import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
+import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderEntity;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.FirstSignatureEntity;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.SignatureInfo;
+
+public class PendingSecondSignatureAchTransferOrderMapper {
+
+	public static AchTransferOrderAggregateRoot toModel(FirstSignatureEntity firstSignatureEntity) {
+		if (firstSignatureEntity == null) {
+			throw new IllegalArgumentException(
+					"PendingSecondSignatureAchTransferOrderMapper.toModel cannot accept null input");
+		}
+
+		AchTransferOrderEntity achTransferOrderEntity = firstSignatureEntity.getAchTransfeEntity();
+		if (achTransferOrderEntity == null) {
+			throw new IllegalStateException(String.format(
+					"FirstSignatureEntity instance with ID [ %s ] failed to map to AggregateRoot because firstSignatureEntity.getAchTransfeEntity() returns null",
+					firstSignatureEntity.getOrderId()));
+		}
+
+		AchTransferOrderAggregateRoot.Builder builder = AchTransferOrderMappingHelper
+				.createBuilderFrom(achTransferOrderEntity);
+
+		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = builder.build();
+
+		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(
+				firstSignatureEntity.getSignatureInfo().getSignerId());
+
+		Long signDateTime = firstSignatureEntity.getSignatureInfo().getDateTime();
+
+		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = achTransferOrderEntity
+				.getFirstSignerCandidateEntities().stream().map(f -> new FinanceOfficerRuleId(f.getId())).toList();
+
+		return pendingFirstSignatureAchTransferOrder.signAsFirst(signerRuleId, signDateTime,
+				refinedSecondSignerCandidateIds);
+	}
+
+	public static FirstSignatureEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot,
+			AchTransferOrderEntity achTransferOrderEntity) {
+
+		if (achTransferOrderAggregateRoot == null) {
+			throw new IllegalArgumentException(
+					"PendingSecondSignatureAchTransferOrderMapper.toModel cannot accept null input");
+		}
+
+		if (!achTransferOrderAggregateRoot.isPendingSecondSignature()) {
+			throw new IllegalStateException(String.format(
+					"ACH transfer order aggregate with ID [ %s ] and status [ %s ] cannot mapped to persistence entity as pending second signature",
+					achTransferOrderAggregateRoot.getAchTransferOrderId().getId(),
+					achTransferOrderAggregateRoot.getStatusString()));
+		}
+
+		achTransferOrderEntity.setStatus(1);
+
+		String id = achTransferOrderAggregateRoot.getAchTransferOrderId().getId();
+		Long signatureDateTime = achTransferOrderAggregateRoot.getFirstSignatureDateTime().get();
+		Long signerId = achTransferOrderAggregateRoot.getFirstSignerId().get().getId();
+		SignatureInfo signatureInfo = new SignatureInfo(signatureDateTime, signerId);
+		return new FirstSignatureEntity(id, achTransferOrderEntity, signatureInfo);
+	}
+}
