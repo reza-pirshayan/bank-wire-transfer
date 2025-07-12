@@ -30,6 +30,11 @@ public abstract class SignerCandidate {
 		this.achTransferOrderEntity = achTransferOrderEntity;
 		this.signerId = signerId;
 	}
+	
+	public SignerCandidate(AchTransferOrderEntity achTransferOrderEntity, Long signerId) {
+		this.achTransferOrderEntity = achTransferOrderEntity;
+		this.signerId = signerId;
+	}
 
 	public Long getId() {
 		return id;

@@ -56,7 +56,7 @@ public class AchTransferOrderDomainService {
 			}
 			
 			AchTransferOrderAggregateRoot signedAchTransferOrder = achTransferOrder
-					.signAsSecond(signerRule.getFinanceOfficerRuleId());
+					.signAsSecond(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis());
 			
 			return signedAchTransferOrder;
 		} else {

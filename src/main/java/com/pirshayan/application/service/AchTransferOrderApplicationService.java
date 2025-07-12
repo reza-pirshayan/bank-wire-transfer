@@ -1,5 +1,6 @@
 package com.pirshayan.application.service;
 
+import com.pirshayan.application.command.CancelAchTransferOrderCommand;
 import com.pirshayan.application.command.SignAchTransferOrderCommand;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderId;
@@ -48,5 +49,9 @@ public class AchTransferOrderApplicationService {
 
 		// Persist the updated (signed) ACH transfer order back to the repository
 		achTransferOrderAggregateRepository.update(signedAchTransferOrder);
+	}
+	
+	public void cancel(CancelAchTransferOrderCommand command) {
+		 // TODO do it as an exercise!
 	}
 }

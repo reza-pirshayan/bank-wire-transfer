@@ -18,4 +18,11 @@ public class FirstSignerCandidateEntityRepository implements PanacheRepository<F
 		parameters.put("order_id", achTansferOrderEntityId);
 		return list(QUERY, parameters);
 	}
+	
+	public void deleteByAchTransferOrderEntityId(String achTransferOrderEntityId) {
+		String QUERY = "#FirstSignerCandidateEntity.deleteByAchTransferOrderEntityId:void";
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("order_id", achTransferOrderEntityId);
+		delete(QUERY, parameters);
+	}
 }

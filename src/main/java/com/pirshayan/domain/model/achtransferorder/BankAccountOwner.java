@@ -19,8 +19,8 @@ class BankAccountOwner {
 		}
 		this.name = Validator.validateBankAccountOwnerName(builder.name);
 		this.personType = builder.personType;
-
-		this.mobileNumber = Optional.ofNullable(Validator.validateBankAccountOwnerMobileNumber(builder.mobileNumber));
+		this.mobileNumber = builder.mobileNumber == null ? Optional.empty()
+				: Optional.ofNullable(Validator.validateBankAccountOwnerMobileNumber(builder.mobileNumber));
 	}
 
 	static class Builder {

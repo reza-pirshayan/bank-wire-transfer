@@ -19,7 +19,7 @@ public class PendingSecondSignatureAchTransferOrderMapper {
 		AchTransferOrderEntity achTransferOrderEntity = firstSignatureEntity.getAchTransfeEntity();
 		if (achTransferOrderEntity == null) {
 			throw new IllegalStateException(String.format(
-					"FirstSignatureEntity instance with ID [ %s ] failed to map to AggregateRoot because firstSignatureEntity.getAchTransfeEntity() returns null",
+					"FirstSignatureEntity instance with ID [ %s ] failed to map to AggregateRoot because firstSignatureEntity.getAchTransferEntity() returns null",
 					firstSignatureEntity.getOrderId()));
 		}
 
@@ -45,18 +45,21 @@ public class PendingSecondSignatureAchTransferOrderMapper {
 
 		if (achTransferOrderAggregateRoot == null) {
 			throw new IllegalArgumentException(
-					"PendingSecondSignatureAchTransferOrderMapper.toModel cannot accept null input");
+					"PendingSecondSignatureAchTransferOrderMapper.toEntity cannot accept null input");
 		}
 
+		if (achTransferOrderEntity == null) {
+			throw new IllegalArgumentException(
+					"PendingSecondSignatureAchTransferOrderMapper.toEntity cannot accept null input");
+		}
+		
 		if (!achTransferOrderAggregateRoot.isPendingSecondSignature()) {
 			throw new IllegalStateException(String.format(
 					"ACH transfer order aggregate with ID [ %s ] and status [ %s ] cannot mapped to persistence entity as pending second signature",
 					achTransferOrderAggregateRoot.getAchTransferOrderId().getId(),
 					achTransferOrderAggregateRoot.getStatusString()));
 		}
-
-		achTransferOrderEntity.setStatus(1);
-
+		
 		String id = achTransferOrderAggregateRoot.getAchTransferOrderId().getId();
 		Long signatureDateTime = achTransferOrderAggregateRoot.getFirstSignatureDateTime().get();
 		Long signerId = achTransferOrderAggregateRoot.getFirstSignerId().get().getId();

@@ -88,7 +88,6 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 		this.transerDescriprion = transerDescriprion;
 		this.transferPayId = transferPayId;
 		this.status = status;
-		this.version = version;
 	}
 
 	public Long getReceivedDateTime() {

@@ -258,15 +258,15 @@ public class AchTransferOrderAggregateRoot {
 			return this;
 		}
 
-		private Builder setFirstSignature(Long dateTime, FinanceOfficerRuleId signerRuleId) {
-			this.firstSignatureDateTime = dateTime;
+		private Builder setFirstSignature(FinanceOfficerRuleId signerRuleId, Long dateTime) {
 			this.firstSignerRuleId = signerRuleId;
+			this.firstSignatureDateTime = dateTime;
 			return this;
 		}
 
-		private Builder setSecondSignature(Long dateTime, FinanceOfficerRuleId signerRuleId) {
-			this.secondSignatureDateTime = dateTime;
+		private Builder setSecondSignature(FinanceOfficerRuleId signerRuleId, Long dateTime) {
 			this.secondSignerRuleId = signerRuleId;
+			this.secondSignatureDateTime = dateTime;
 			return this;
 		}
 
@@ -330,12 +330,12 @@ public class AchTransferOrderAggregateRoot {
 
 		ensureSignerRuleIdIsInCandidateList(signerRuleId, refinedSecondSignerCandidateIds);
 
-		return cloneBuilder().setPendingSecondSignature().setFirstSignature(System.currentTimeMillis(), signerRuleId)
+		return cloneBuilder().setPendingSecondSignature().setFirstSignature(signerRuleId, signDateTime)
 				.setFirstSignerCandidateIds(new ArrayList<>())
 				.setSecondSignerCandidateIds(refinedSecondSignerCandidateIds).build();
 	}
 
-	public AchTransferOrderAggregateRoot signAsSecond(final FinanceOfficerRuleId signerRuleId) {
+	public AchTransferOrderAggregateRoot signAsSecond(final FinanceOfficerRuleId signerRuleId, Long signDateTime) {
 		if (firstSignature.get().getSignerRuleId().equals(signerRuleId))
 			throw new AchTransferOrderSigner1AndSigner2CannotBeTheSameException(this);
 
@@ -347,7 +347,7 @@ public class AchTransferOrderAggregateRoot {
 
 		ensureSignerRuleIdIsInCandidateList(signerRuleId, secondSignerCandidateIds);
 
-		return cloneBuilder().setPendingSend().setSecondSignature(System.currentTimeMillis(), signerRuleId)
+		return cloneBuilder().setPendingSend().setSecondSignature(signerRuleId, signDateTime)
 				.setSecondSignerCandidateIds(new ArrayList<>()).build();
 	}
 
@@ -375,9 +375,9 @@ public class AchTransferOrderAggregateRoot {
 		}
 
 		firstSignature.ifPresent(
-				signature -> builder.setFirstSignature(signature.getDateTime(), signature.getSignerRuleId()));
+				signature -> builder.setFirstSignature(signature.getSignerRuleId(), signature.getDateTime()));
 		secondSignature.ifPresent(
-				signature -> builder.setSecondSignature(signature.getDateTime(), signature.getSignerRuleId()));
+				signature -> builder.setSecondSignature(signature.getSignerRuleId(), signature.getDateTime()));
 
 		transfer.getDestinationBankAccount().getOwner().getMobileNumber()
 				.ifPresent(builder::setTransferDestinationBankAccountOwnerMobileNumber);

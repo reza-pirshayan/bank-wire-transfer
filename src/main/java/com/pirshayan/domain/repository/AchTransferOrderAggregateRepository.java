@@ -9,5 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 public interface AchTransferOrderAggregateRepository {
 	public AchTransferOrderAggregateRoot findById(AchTransferOrderId achTransferOrderId);
 
+	public void create(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot);
+	
 	public void update(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot);
 }
