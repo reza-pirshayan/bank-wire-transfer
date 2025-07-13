@@ -36,7 +36,7 @@ public class FinanceOfficerRuleMapper {
 	}
 
 	public static FinanceOfficerRuleEntity toEntity(FinanceOfficerRuleAggregateRoot root) {
-		// Not implemeted: Won't be used on our project example;
+		// Not implemented: Won't be used on our project example;
 		return null;
 	}
 }
