@@ -5,9 +5,9 @@ import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNot
 
 public class FinanceOfficerRuleAggregateRoot {
 	private final FinanceOfficerRuleId financeOfficerRuleId;
-	private final Boolean hasFirstSignaturePermission;
-	private final Boolean has‌SecondSignaturePermission;
-	private final Boolean hasSendPermission;
+	private final Boolean isAllowedToSignAsFirst;
+	private final Boolean isAllowedToSignAsSecond;
+	private final Boolean isAllowedToSend;
 	private final Long maxFirstSignAmount;
 	private final Long maxSecondSignAmount;
 	private final Long maxSendAmount;
@@ -15,9 +15,9 @@ public class FinanceOfficerRuleAggregateRoot {
 
 	private FinanceOfficerRuleAggregateRoot(Builder builder) {
 		this.financeOfficerRuleId = builder.financeOfficerRuleId;
-		this.hasFirstSignaturePermission = builder.hasFirstSignaturePermission;
-		this.has‌SecondSignaturePermission = builder.has‌SecondSignaturePermission;
-		this.hasSendPermission = builder.hasSendPermission;
+		this.isAllowedToSignAsFirst = builder.isAllowedToSignAsFirst;
+		this.isAllowedToSignAsSecond = builder.isAllowedToSignAsSecond;
+		this.isAllowedToSend = builder.isAllowedToSend;
 		this.maxFirstSignAmount = Validator.validateTransferAmount(builder.maxFirstSignAmount);
 		this.maxSecondSignAmount = Validator.validateTransferAmount(builder.maxSecondSignAmount);
 		this.maxSendAmount = Validator.validateTransferAmount(builder.maxSendAmount);
@@ -28,16 +28,16 @@ public class FinanceOfficerRuleAggregateRoot {
 		return financeOfficerRuleId;
 	}
 
-	public Boolean hasFirstSignaturePermission() {
-		return hasFirstSignaturePermission;
+	public Boolean isAllowedToSignAsFirst() {
+		return isAllowedToSignAsFirst;
 	}
 
-	public Boolean has‌SecondSignaturePermission() {
-		return has‌SecondSignaturePermission;
+	public Boolean isAllowedToSignAsSecond() {
+		return isAllowedToSignAsSecond;
 	}
 
-	public Boolean hasSendPermission() {
-		return hasSendPermission;
+	public Boolean isAllowedToSend() {
+		return isAllowedToSend;
 	}
 
 	public Long getMaxFirstSignAmount() {
@@ -102,21 +102,21 @@ public class FinanceOfficerRuleAggregateRoot {
 
 	public static class Builder {
 		private final FinanceOfficerRuleId financeOfficerRuleId;
-		private final Boolean hasFirstSignaturePermission;
-		private final Boolean has‌SecondSignaturePermission;
-		private final Boolean hasSendPermission;
+		private final Boolean isAllowedToSignAsFirst;
+		private final Boolean isAllowedToSignAsSecond;
+		private final Boolean isAllowedToSend;
 		private final Long maxFirstSignAmount;
 		private final Long maxSecondSignAmount;
 		private final Long maxSendAmount;
 		private Position position;
 
-		public Builder(FinanceOfficerRuleId financeOfficerRuleId, Boolean hasFirstSignaturePermission,
-				Boolean has‌SecondSignaturePermission, Boolean hasSendPermission, Long maxFirstSignAmount,
+		public Builder(FinanceOfficerRuleId financeOfficerRuleId, Boolean isAllowedToSignAsFirst,
+				Boolean isAllowedToSignAsSecond, Boolean isAllowedToSend, Long maxFirstSignAmount,
 				Long maxSecondSignAmount, Long maxSendAmount) {
 			this.financeOfficerRuleId = financeOfficerRuleId;
-			this.hasFirstSignaturePermission = hasFirstSignaturePermission;
-			this.has‌SecondSignaturePermission = has‌SecondSignaturePermission;
-			this.hasSendPermission = hasSendPermission;
+			this.isAllowedToSignAsFirst = isAllowedToSignAsFirst;
+			this.isAllowedToSignAsSecond = isAllowedToSignAsSecond;
+			this.isAllowedToSend = isAllowedToSend;
 			this.maxFirstSignAmount = maxFirstSignAmount;
 			this.maxSecondSignAmount = maxSecondSignAmount;
 			this.maxSendAmount = maxSendAmount;
@@ -173,7 +173,7 @@ public class FinanceOfficerRuleAggregateRoot {
 			return this;
 		}
 
-		public FinanceOfficerRuleAggregateRoot builder() {
+		public FinanceOfficerRuleAggregateRoot build() {
 			return new FinanceOfficerRuleAggregateRoot(this);
 		}
 
@@ -181,15 +181,15 @@ public class FinanceOfficerRuleAggregateRoot {
 
 	public void ensureSufficientPrivilegesForFirstSignature(Long amount) {
 
-		if (!hasFirstSignaturePermission || maxFirstSignAmount < amount)
-			throw new FinanceOfficerNotPrivilegedToPerformFirstSignException(hasFirstSignaturePermission,
+		if (!isAllowedToSignAsFirst || maxFirstSignAmount < amount)
+			throw new FinanceOfficerNotPrivilegedToPerformFirstSignException(isAllowedToSignAsFirst,
 					maxFirstSignAmount);
 	}
 
 	public void ensureSufficientPrivilegesForSecondSignature(Long amount) {
 
-		if (!has‌SecondSignaturePermission || maxSecondSignAmount < amount)
-			throw new FinanceOfficerNotPrivilegedToPerformFirstSignException(has‌SecondSignaturePermission,
+		if (!isAllowedToSignAsSecond || maxSecondSignAmount < amount)
+			throw new FinanceOfficerNotPrivilegedToPerformFirstSignException(isAllowedToSignAsSecond,
 					maxSecondSignAmount);
 	}
 }

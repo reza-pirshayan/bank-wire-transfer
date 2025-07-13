@@ -16,7 +16,7 @@ public class PendingSecondSignatureAchTransferOrderMapper {
 					"PendingSecondSignatureAchTransferOrderMapper.toModel cannot accept null input");
 		}
 
-		AchTransferOrderEntity achTransferOrderEntity = firstSignatureEntity.getAchTransfeEntity();
+		AchTransferOrderEntity achTransferOrderEntity = firstSignatureEntity.getAchTransferOrderEntity();
 		if (achTransferOrderEntity == null) {
 			throw new IllegalStateException(String.format(
 					"FirstSignatureEntity instance with ID [ %s ] failed to map to AggregateRoot because firstSignatureEntity.getAchTransferEntity() returns null",
@@ -62,7 +62,7 @@ public class PendingSecondSignatureAchTransferOrderMapper {
 		
 		String id = achTransferOrderAggregateRoot.getAchTransferOrderId().getId();
 		Long signatureDateTime = achTransferOrderAggregateRoot.getFirstSignatureDateTime().get();
-		Long signerId = achTransferOrderAggregateRoot.getFirstSignerId().get().getId();
+		Long signerId = achTransferOrderAggregateRoot.getFirstSignerRuleId().get().getId();
 		SignatureInfo signatureInfo = new SignatureInfo(signatureDateTime, signerId);
 		return new FirstSignatureEntity(id, achTransferOrderEntity, signatureInfo);
 	}

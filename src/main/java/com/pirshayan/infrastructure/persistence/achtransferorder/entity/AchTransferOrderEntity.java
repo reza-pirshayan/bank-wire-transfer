@@ -1,5 +1,6 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -11,40 +12,40 @@ import jakarta.persistence.Version;
 @Entity
 @Table(name = "achTransferOrders")
 public class AchTransferOrderEntity extends AchTransferOrderAbstract {
-	@Column(name = "received_date_time", columnDefinition = "NUMBER")
+	@Column(name = "received_date_time", columnDefinition = "NUMBER", nullable = false)
 	private Long receivedDateTime;
 
-	@Column(name = "transfer_no", length = 20)
+	@Column(name = "transfer_no", length = 20, nullable = false)
 	private String transferNo;
 
-	@Column(name = "amount", columnDefinition = "NUMBER")
+	@Column(name = "amount", columnDefinition = "NUMBER", nullable = false)
 	private Long amount;
 
-	@Column(name = "date_of_issue", columnDefinition = "NUMBER")
-	private Long dateOfIssue;
+	@Column(name = "date_of_issue", columnDefinition = "DATE", nullable = false)
+	private LocalDate dateOfIssue;
 
-	@Column(name = "destination_iban", columnDefinition = "CHAR(26)")
+	@Column(name = "destination_iban", columnDefinition = "CHAR(26)", nullable = false)
 	private String destinationIban;
 
-	@Column(name = "account_owner_national_code", length = 30)
+	@Column(name = "account_owner_national_code", length = 30, nullable = false)
 	private String accountOwnerNationalCode;
 
-	@Column(name = "account_owner_name", length = 50)
+	@Column(name = "account_owner_name", length = 50, nullable = false)
 	private String accountOwnerName;
 
-	@Column(name = "account_owner_person_type", columnDefinition = "CHAR(1)")
+	@Column(name = "account_owner_person_type", columnDefinition = "CHAR(1)", nullable = false)
 	private String accountOwnerPersonType;
 
-	@Column(name = "account_owner_mobile_no")
+	@Column(name = "account_owner_mobile_no", length = 13)
 	private String accountOwnerMobileNumber;
 
-	@Column(name = "transfer_owner_national_code", length = 30)
+	@Column(name = "transfer_owner_national_code", length = 30, nullable = false)
 	private String transferOwnerNationalCode;
 
-	@Column(name = "transfer_ownr_name", length = 50)
+	@Column(name = "transfer_ownr_name", length = 50, nullable = false)
 	private String transferOwnerName;
 
-	@Column(name = "checksum", columnDefinition = "NUMBER")
+	@Column(name = "checksum", columnDefinition = "NUMBER", nullable = false)
 	private Integer checksum;
 
 	@Column(name = "transfer_description", length = 50)
@@ -53,7 +54,7 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 	@Column(name = "transfer_pay_id", length = 30)
 	private String transferPayId;
 
-	@Column(name = "status", columnDefinition = "NUMBER")
+	@Column(name = "status", columnDefinition = "NUMBER", nullable = false)
 	private Integer status;
 
 	@Transient
@@ -68,7 +69,7 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 	public AchTransferOrderEntity() {
 	}
 
-	public AchTransferOrderEntity(String id, Long receivedDateTime, String transferNo, Long amount, Long dateOfIssue,
+	public AchTransferOrderEntity(String id, Long receivedDateTime, String transferNo, Long amount, LocalDate dateOfIssue,
 			String destinationIban, String accountOwnerNationalCode, String accountOwnerName,
 			String accountOwnerPersonType, String accountOwnerMobileNumber, String transferOwnerNationalCode,
 			String transferOwnerName, Integer checksum, String transerDescriprion, String transferPayId, Integer status) {
@@ -114,11 +115,11 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 		this.amount = amount;
 	}
 
-	public Long getDateOfIssue() {
+	public LocalDate getDateOfIssue() {
 		return dateOfIssue;
 	}
 
-	public void setDateOfIssue(Long dateOfIssue) {
+	public void setDateOfIssue(LocalDate dateOfIssue) {
 		this.dateOfIssue = dateOfIssue;
 	}
 

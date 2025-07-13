@@ -22,7 +22,7 @@ public class PendingSendAchTransferOrderMapper {
 					secondSignatureEntity.getOrderId()));
 		}
 
-		AchTransferOrderEntity achTransferOrderEntity = firstSignatureEntity.getAchTransfeEntity();
+		AchTransferOrderEntity achTransferOrderEntity = firstSignatureEntity.getAchTransferOrderEntity();
 		if (achTransferOrderEntity == null) {
 			throw new IllegalStateException(String.format(
 					"SecondSignatureEntity instance with ID [ %s ] failed to map to AggregateRoot because secondSignatureEntity.getFirstSignatureEntity.getAchTransfeEntity() returns null",
@@ -68,7 +68,7 @@ public class PendingSendAchTransferOrderMapper {
 
 		String id = firstSignatureEntity.getOrderId();
 		Long signatureDateTime = achTransferOrderAggregateRoot.getSecondSignatureDateTime().get();
-		Long signerId = achTransferOrderAggregateRoot.getSecondSignerId().get().getId();
+		Long signerId = achTransferOrderAggregateRoot.getSecondSignerRuleId().get().getId();
 		SignatureInfo signatureInfo = new SignatureInfo(signatureDateTime, signerId);
 		return new SecondSignatureEntity(id, firstSignatureEntity, signatureInfo);
 	}

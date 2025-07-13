@@ -5,12 +5,14 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "secondSignatures")
 public class SecondSignatureEntity extends AchTransferOrderAbstract {
+	@MapsId
 	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	@JoinColumn(name = "order_id", referencedColumnName = "order_id")
 	FirstSignatureEntity firstSignatureEntity;

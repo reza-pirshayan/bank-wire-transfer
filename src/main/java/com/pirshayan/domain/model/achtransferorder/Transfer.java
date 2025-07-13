@@ -1,5 +1,6 @@
 package com.pirshayan.domain.model.achtransferorder;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.jmolecules.ddd.annotation.Entity;
@@ -12,7 +13,7 @@ class Transfer {
 	@Identity
 	private final String id;
 	private final Long amount;
-	private final Long dateOfIssue;
+	private final LocalDate dateOfIssue;
 	private final DestinationBankAccount destinationBankAccount;
 	private final TransferOwner owner;
 	private final Integer checksum;
@@ -38,7 +39,7 @@ class Transfer {
 		return amount;
 	}
 
-	public Long getDateOfIssue() {
+	public LocalDate getDateOfIssue() {
 		return dateOfIssue;
 	}
 
@@ -65,14 +66,14 @@ class Transfer {
 	static class Builder {
 		private final String id;
 		private final Long amount;
-		private final Long dateOfIssue;
+		private final LocalDate dateOfIssue;
 		private final DestinationBankAccount destinationBankAccount;
 		private final TransferOwner owner;
 		private final Integer checksum;
 		private String description;
 		private String payId;
 
-		public Builder(String id, Long amount, Long dateOfIssue, DestinationBankAccount destinationBankAccount,
+		public Builder(String id, Long amount, LocalDate dateOfIssue, DestinationBankAccount destinationBankAccount,
 				TransferOwner owner, Integer checksum) {
 			this.id = id;
 			this.amount = amount;

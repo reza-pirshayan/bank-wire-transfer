@@ -1,5 +1,6 @@
 package com.pirshayan.domain.model.achtransferorder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class AchTransferOrderAggregateRoot {
 		return transfer.getAmount();
 	}
 
-	public Long getTransferDateOfIssue() {
+	public LocalDate getTransferDateOfIssue() {
 		return transfer.getDateOfIssue();
 	}
 
@@ -128,7 +129,7 @@ public class AchTransferOrderAggregateRoot {
 		return firstSignature.map(SignatureInfo::getDateTime);
 	}
 
-	public Optional<FinanceOfficerRuleId> getFirstSignerId() {
+	public Optional<FinanceOfficerRuleId> getFirstSignerRuleId() {
 		return firstSignature.map(SignatureInfo::getSignerRuleId);
 	}
 
@@ -136,7 +137,7 @@ public class AchTransferOrderAggregateRoot {
 		return secondSignature.map(SignatureInfo::getDateTime);
 	}
 
-	public Optional<FinanceOfficerRuleId> getSecondSignerId() {
+	public Optional<FinanceOfficerRuleId> getSecondSignerRuleId() {
 		return secondSignature.map(SignatureInfo::getSignerRuleId);
 	}
 
@@ -157,7 +158,7 @@ public class AchTransferOrderAggregateRoot {
 		private final Long receivedDateTime;
 		private final String transferId;
 		private final Long transferAmount;
-		private final Long transferDateOfIssue;
+		private final LocalDate transferDateOfIssue;
 		private final String transferDestinationBankAccountIban;
 		private final String transferDestinationBankAccountOwnerId;
 		private final String transferDestinationBankAccountOwnerName;
@@ -182,7 +183,7 @@ public class AchTransferOrderAggregateRoot {
 		private SignatureInfo secondSignature;
 
 		public Builder(AchTransferOrderId achTransferOrderId, Long receivedDateTime, String transferId,
-				Long transferAmount, Long transferDateOfIssue, String transferDestinationBankAccountIban,
+				Long transferAmount, LocalDate transferDateOfIssue, String transferDestinationBankAccountIban,
 				String transferDestinationBankAccountOwnerId, String transferDestinationBankAccountOwnerName,
 				String transferOwnerId, String transferOwnerName, Integer transferChecksum) {
 			this.achTransferOrderId = achTransferOrderId;
@@ -328,7 +329,7 @@ public class AchTransferOrderAggregateRoot {
 							getAchTransferOrderId().getId(), status));
 		}
 
-		ensureSignerRuleIdIsInCandidateList(signerRuleId, refinedSecondSignerCandidateIds);
+		ensureSignerRuleIdIsInCandidateList(signerRuleId, firstSignerCandidateIds);
 
 		return cloneBuilder().setPendingSecondSignature().setFirstSignature(signerRuleId, signDateTime)
 				.setFirstSignerCandidateIds(new ArrayList<>())
@@ -336,14 +337,14 @@ public class AchTransferOrderAggregateRoot {
 	}
 
 	public AchTransferOrderAggregateRoot signAsSecond(final FinanceOfficerRuleId signerRuleId, Long signDateTime) {
-		if (firstSignature.get().getSignerRuleId().equals(signerRuleId))
-			throw new AchTransferOrderSigner1AndSigner2CannotBeTheSameException(this);
-
 		if (!isPendingSecondSignature()) {
 			throw new IllegalStateException(
 					String.format("ACH transfer order with ID [ %s ] and status [ %s ] cannot be signed as second.",
 							getAchTransferOrderId().getId(), status));
 		}
+
+		if (firstSignature.get().getSignerRuleId().equals(signerRuleId))
+			throw new AchTransferOrderSigner1AndSigner2CannotBeTheSameException(this);
 
 		ensureSignerRuleIdIsInCandidateList(signerRuleId, secondSignerCandidateIds);
 

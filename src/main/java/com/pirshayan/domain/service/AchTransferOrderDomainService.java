@@ -41,14 +41,14 @@ public class AchTransferOrderDomainService {
 			
 			signerRule.ensureSufficientPrivilegesForFirstSignature(achTransferOrder.getTransferAmount());
 			
-			if(achTransferOrder.getFirstSignatureDateTime().isEmpty() || achTransferOrder.getFirstSignerId().isEmpty()) {
+			if(achTransferOrder.getFirstSignatureDateTime().isEmpty() || achTransferOrder.getFirstSignerRuleId().isEmpty()) {
 				throw new IllegalStateException(String.format(
 						"ACH transfer order with ID [ %s ] and status [ %s ] must not have null first signature info.",
 						achTransferOrder.getAchTransferOrderId(), achTransferOrder.getStatusString()));
 			}
 			
 			FinanceOfficerRuleAggregateRoot firstSignerRule = financeOfficerRuleAggregateRepository
-					.findById(achTransferOrder.getFirstSignerId().get());
+					.findById(achTransferOrder.getFirstSignerRuleId().get());
 			
 			if (signerRule.getRank() < firstSignerRule.getRank()) {
 				throw new com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException(achTransferOrder, signerRule,

@@ -5,10 +5,10 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class SignatureInfo {
-	@Column(name = "date_time", columnDefinition = "NUMBER")
+	@Column(name = "date_time", columnDefinition = "NUMBER", nullable = false)
 	private Long dateTime;
 
-	@Column(name = "signer_id", columnDefinition = "NUMBER")
+	@Column(name = "signer_id", columnDefinition = "NUMBER", nullable = false)
 	private Long signerId;
 
 	public SignatureInfo() {

@@ -1,6 +1,7 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,11 +16,11 @@ public abstract class SignerCandidate {
 	@Column(name = "id")
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "order_id", referencedColumnName = "order_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", referencedColumnName = "order_id", nullable = false)
 	private AchTransferOrderEntity achTransferOrderEntity;
 
-	@Column(name = "signer_id")
+	@Column(name = "signer_id", nullable = false)
 	private Long signerId;
 
 	public SignerCandidate() {

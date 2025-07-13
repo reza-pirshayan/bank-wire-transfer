@@ -145,10 +145,10 @@ public interface Validator {
 	}
 
 	static String validateTransferId(String value) {
-		if (value.matches("^[a-zA-Z0-9/]+$") && value.length() < 28)
+		if (value.matches("^[a-zA-Z0-9_/]+$") && value.length() < 28)
 			return value;
 		else
-			throw new InvalidDomainObjectException("invalid OrderUniqueCode", "AchTransfer", "orderUniqueCode");
+			throw new InvalidDomainObjectException("invalid  transfer id", "Transfer", "transferId");
 	}
 
 	static Long validateTransferAmount(Long value) {

@@ -5,16 +5,17 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "firstSignature")
+@Table(name = "firstSignatures")
 public class FirstSignatureEntity extends AchTransferOrderAbstract {
-
+	@MapsId
 	@OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	@JoinColumn(name = "order_id", referencedColumnName = "order_id")
-	private AchTransferOrderEntity achTransfeEntity;
+	private AchTransferOrderEntity achTransferOrderEntity;
 
 	@Embedded
 	private SignatureInfo signatureInfo;
@@ -22,18 +23,18 @@ public class FirstSignatureEntity extends AchTransferOrderAbstract {
 	public FirstSignatureEntity() {
 	}
 
-	public FirstSignatureEntity(String id, AchTransferOrderEntity achTransfeEntity, SignatureInfo signatureInfo) {
+	public FirstSignatureEntity(String id, AchTransferOrderEntity achTransferOrderEntity, SignatureInfo signatureInfo) {
 		super(id);
-		this.achTransfeEntity = achTransfeEntity;
+		this.achTransferOrderEntity = achTransferOrderEntity;
 		this.signatureInfo = signatureInfo;
 	}
 
-	public AchTransferOrderEntity getAchTransfeEntity() {
-		return achTransfeEntity;
+	public AchTransferOrderEntity getAchTransferOrderEntity() {
+		return achTransferOrderEntity;
 	}
 
-	public void setAchTransfeEntity(AchTransferOrderEntity achTransfeEntity) {
-		this.achTransfeEntity = achTransfeEntity;
+	public void setAchTransferOrderEntity(AchTransferOrderEntity achTransferOrderEntity) {
+		this.achTransferOrderEntity = achTransferOrderEntity;
 	}
 
 	public SignatureInfo getSignatureInfo() {

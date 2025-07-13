@@ -19,6 +19,6 @@ public class AchTransferOrderSigner1AndSigner2CannotBeTheSameException extends G
 	@Override
 	public String getErrorDetails() {
 		return String.format("signer1 and signer2 cannot be the same for ACH transfer order [ %s ] signer id as [ %s ]",
-				achTransferOrder.getAchTransferOrderId().getId(), achTransferOrder.getFirstSignerId().get().getId());
+				achTransferOrder.getAchTransferOrderId().getId(), achTransferOrder.getFirstSignerRuleId().get().getId());
 	}
 }

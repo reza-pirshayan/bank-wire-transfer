@@ -7,7 +7,7 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class AchTransferOrderAbstract {
 	@Id
-	@Column(name = "order_id")
+	@Column(name = "order_id", length = 15)
 	private String orderId;
 
 	public AchTransferOrderAbstract() {

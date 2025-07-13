@@ -6,8 +6,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "firstSignerCandidates")
-@NamedQuery(name = "FirstSignerCandidateEntity.findByAchTransferOrderEntityId:list", query = "select f from FirstSignerCandidateEntity as f where f.order_id = :order_id")
-@NamedQuery(name = "FirstSignerCandidateEntity.deleteByAchTransferOrderEntityId:void", query = "delete f from FirstSignerCandidateEntity as f where f.order_id = :order_id")
+@NamedQuery(name = "FirstSignerCandidateEntity.findByAchTransferOrderEntityId:list", query = "select f from FirstSignerCandidateEntity as f where f.achTransferOrderEntity.orderId = :order_id")
+@NamedQuery(name = "FirstSignerCandidateEntity.deleteByAchTransferOrderEntityId:void", query = "delete from FirstSignerCandidateEntity as f where f.achTransferOrderEntity.orderId = :order_id")
 public class FirstSignerCandidateEntity extends SignerCandidate {
 
 	public FirstSignerCandidateEntity() {
