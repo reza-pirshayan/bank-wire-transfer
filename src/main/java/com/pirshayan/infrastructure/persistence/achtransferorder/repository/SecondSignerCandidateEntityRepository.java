@@ -12,16 +12,23 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class SecondSignerCandidateEntityRepository implements PanacheRepository<SecondSignerCandidateEntity> {
 	public List<SecondSignerCandidateEntity> findByAchTransferOrderEntityId(String achTransferOrderEntityId) {
-		String QUERY = "#SecondSignerCandidateEntity.findByAchTransferOrderEntityId.list";
+		String query = "#SecondSignerCandidateEntity.findByAchTransferOrderEntityId.list";
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("order_id", achTransferOrderEntityId);
-		return list(QUERY, parameters);
+		return list(query, parameters);
 	}
 	
 	public void deleteByAchTransferOrderEntityId(String achTransferOrderEntityId) {
-		String QUERY = "#SecondSignerCandidateEntity.deleteByAchTransferOrderEntityId:void";
+		String query = "#SecondSignerCandidateEntity.deleteByAchTransferOrderEntityId:void";
 		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("order_id?", achTransferOrderEntityId);
-		delete(QUERY,parameters);
+		parameters.put("order_id", achTransferOrderEntityId);
+		delete(query,parameters);
+	}
+	
+	public void deleteByAchTransferOrderEntityIds(List<Long> achTransferOrderEntityIds) {
+		String query = "#SecondSignerCandidateEntity.deleteByAchTransferOrderEntityIds:void";
+		HashMap<String, Object> parameters = new HashMap<>();
+		parameters.put("achTransferOrderEntityIds", achTransferOrderEntityIds);
+		delete(query, parameters);
 	}
 }

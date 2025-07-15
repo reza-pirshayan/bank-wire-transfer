@@ -1,7 +1,10 @@
 package com.pirshayan.domain.model.financeofficerrule;
 
+import java.util.Objects;
+
 import com.pirshayan.domain.model.Validator;
-import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToPerformFirstSignException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 
 public class FinanceOfficerRuleAggregateRoot {
 	private final FinanceOfficerRuleId financeOfficerRuleId;
@@ -18,9 +21,9 @@ public class FinanceOfficerRuleAggregateRoot {
 		this.isAllowedToSignAsFirst = builder.isAllowedToSignAsFirst;
 		this.isAllowedToSignAsSecond = builder.isAllowedToSignAsSecond;
 		this.isAllowedToSend = builder.isAllowedToSend;
-		this.maxFirstSignAmount = Validator.validateTransferAmount(builder.maxFirstSignAmount);
-		this.maxSecondSignAmount = Validator.validateTransferAmount(builder.maxSecondSignAmount);
-		this.maxSendAmount = Validator.validateTransferAmount(builder.maxSendAmount);
+		this.maxFirstSignAmount = Validator.validateMaxFirstSignAmount(builder.maxFirstSignAmount);
+		this.maxSecondSignAmount = Validator.validateMaxSecondSignAmount(builder.maxSecondSignAmount);
+		this.maxSendAmount = Validator.validateMaxSendAmount(builder.maxSendAmount);
 		this.position = builder.position;
 	}
 
@@ -28,15 +31,15 @@ public class FinanceOfficerRuleAggregateRoot {
 		return financeOfficerRuleId;
 	}
 
-	public Boolean isAllowedToSignAsFirst() {
+	public boolean isAllowedToSignAsFirst() {
 		return isAllowedToSignAsFirst;
 	}
 
-	public Boolean isAllowedToSignAsSecond() {
+	public boolean isAllowedToSignAsSecond() {
 		return isAllowedToSignAsSecond;
 	}
 
-	public Boolean isAllowedToSend() {
+	public boolean isAllowedToSend() {
 		return isAllowedToSend;
 	}
 
@@ -52,43 +55,43 @@ public class FinanceOfficerRuleAggregateRoot {
 		return maxSendAmount;
 	}
 
-	public Boolean isCeo() {
+	public boolean isCeo() {
 		return position == Position.CEO;
 	}
 
-	public Boolean isCfo() {
+	public boolean isCfo() {
 		return position == Position.CFO;
 	}
 
-	public Boolean isFinanceDirectorGeneral() {
+	public boolean isFinanceDirectorGeneral() {
 		return position == Position.FINANCE_DIRECTOR_GENERAL;
 	}
 
-	public Boolean isDeputyFinanceDirectorGeneral() {
+	public boolean isDeputyFinanceDirectorGeneral() {
 		return position == Position.DEPUTY_FINANCE_DIRECTOR_GENERAL;
 	}
 
-	public Boolean isRegionalDirectorGeneral() {
+	public boolean isRegionalDirectorGeneral() {
 		return position == Position.REGIONAL_DIRECTOR_GENERAL;
 	}
 
-	public Boolean isDeputyRegionalDirectorGeneral() {
+	public boolean isDeputyRegionalDirectorGeneral() {
 		return position == Position.DEPUTY_REGIONAL_DIRECTOR_GENERAL;
 	}
 
-	public Boolean isBranchManager() {
+	public boolean isBranchManager() {
 		return position == Position.BRANCH_MANAGER;
 	}
 
-	public Boolean isDeputyBranchFinanceManager() {
+	public boolean isDeputyBranchFinanceManager() {
 		return position == Position.DEPUTY_BRANCH_FINANCE_MANAGER;
 	}
 
-	public Boolean isPermanentFinamcePersonnel() {
+	public boolean isPermanentFinamcePersonnel() {
 		return position == Position.PERMANENT_FINANCE_PERSONNEL;
 	}
 
-	public Boolean isContranctFinancePersonnel() {
+	public boolean isContranctFinancePersonnel() {
 		return position == Position.CONTRACT_FINANCE_PERSONNEL;
 	}
 	
@@ -163,7 +166,7 @@ public class FinanceOfficerRuleAggregateRoot {
 			return this;
 		}
 
-		public Builder setPermanentFinamcePersonnel() {
+		public Builder setPermanentFinancePersonnel() {
 			this.position = Position.PERMANENT_FINANCE_PERSONNEL;
 			return this;
 		}
@@ -182,14 +185,31 @@ public class FinanceOfficerRuleAggregateRoot {
 	public void ensureSufficientPrivilegesForFirstSignature(Long amount) {
 
 		if (!isAllowedToSignAsFirst || maxFirstSignAmount < amount)
-			throw new FinanceOfficerNotPrivilegedToPerformFirstSignException(isAllowedToSignAsFirst,
+			throw new FinanceOfficerNotPrivilegedToSignAsFirstSignerException(isAllowedToSignAsFirst,
 					maxFirstSignAmount);
 	}
 
 	public void ensureSufficientPrivilegesForSecondSignature(Long amount) {
 
 		if (!isAllowedToSignAsSecond || maxSecondSignAmount < amount)
-			throw new FinanceOfficerNotPrivilegedToPerformFirstSignException(isAllowedToSignAsSecond,
+			throw new FinanceOfficerNotPrivilegedToSignAsSecondSignerException(isAllowedToSignAsSecond,
 					maxSecondSignAmount);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(financeOfficerRuleId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FinanceOfficerRuleAggregateRoot other = (FinanceOfficerRuleAggregateRoot) obj;
+		return Objects.equals(financeOfficerRuleId, other.financeOfficerRuleId);
 	}
 }

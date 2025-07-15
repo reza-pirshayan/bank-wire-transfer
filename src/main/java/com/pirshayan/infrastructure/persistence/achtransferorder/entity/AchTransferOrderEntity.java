@@ -58,6 +58,9 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 	private Integer status;
 
 	@Transient
+	private FirstSignatureEntity firstSignatureEntity;
+
+	@Transient
 	private List<FirstSignerCandidateEntity> firstSignerCandidateEntities;
 
 	@Transient
@@ -69,10 +72,11 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 	public AchTransferOrderEntity() {
 	}
 
-	public AchTransferOrderEntity(String id, Long receivedDateTime, String transferNo, Long amount, LocalDate dateOfIssue,
-			String destinationIban, String accountOwnerNationalCode, String accountOwnerName,
+	public AchTransferOrderEntity(String id, Long receivedDateTime, String transferNo, Long amount,
+			LocalDate dateOfIssue, String destinationIban, String accountOwnerNationalCode, String accountOwnerName,
 			String accountOwnerPersonType, String accountOwnerMobileNumber, String transferOwnerNationalCode,
-			String transferOwnerName, Integer checksum, String transerDescriprion, String transferPayId, Integer status) {
+			String transferOwnerName, Integer checksum, String transerDescriprion, String transferPayId,
+			Integer status) {
 		super(id);
 		this.receivedDateTime = receivedDateTime;
 		this.transferNo = transferNo;
@@ -209,6 +213,14 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public FirstSignatureEntity getFirstSignatureEntity() {
+		return firstSignatureEntity;
+	}
+
+	public void setFirstSignatureEntity(FirstSignatureEntity firstSignatureEntity) {
+		this.firstSignatureEntity = firstSignatureEntity;
 	}
 
 	public List<FirstSignerCandidateEntity> getFirstSignerCandidateEntities() {

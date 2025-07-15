@@ -22,18 +22,19 @@ public class AchTransferOrderApplicationService {
 			FinanceOfficerRuleAggregateRepository financeOfficerRuleAggregateRepository,
 			AchTransferOrderAggregateRepository achTransferOrderAggregateRepository,
 			AchTransferOrderDomainService achTransferOrderDomainService) {
+		
 		this.financeOfficerRuleAggregateRepository = financeOfficerRuleAggregateRepository;
 		this.achTransferOrderAggregateRepository = achTransferOrderAggregateRepository;
 		this.achTransferOrderDomainService = achTransferOrderDomainService;
 	}
 
 	public void sign(SignAchTransferOrderCommand command) {
-		// Create a value object for the signer's ID based on the command input
-		FinanceOfficerRuleId signerId = new FinanceOfficerRuleId(command.getSignerId());
+		// Create a value object for the signer's rule ID based on the command input
+		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(command.getSignerRuleId());
 
 		// Load the signer’s rule aggregate from the repository (includes their rank and
 		// privileges)
-		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerId);
+		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerRuleId);
 		// Create a value object for the current ACH transfer order ID
 
 		AchTransferOrderId achTransferOrderId = new AchTransferOrderId(command.getAchTransferOrderId());

@@ -69,11 +69,11 @@ public class AchTransferOrderAggregateRoot {
 		return transfer.getDestinationBankAccount().getOwner().getName();
 	}
 
-	public Boolean isTransferDestinationBankAccountOwnerNatural() {
+	public boolean isTransferDestinationBankAccountOwnerNatural() {
 		return transfer.getDestinationBankAccount().getOwner().getPersonType() == PersonType.NATURAL;
 	}
 
-	public Boolean isTransferDestinationBankAccountOwnerLegal() {
+	public boolean isTransferDestinationBankAccountOwnerLegal() {
 		return transfer.getDestinationBankAccount().getOwner().getPersonType() == PersonType.LEGAL;
 	}
 
@@ -101,19 +101,19 @@ public class AchTransferOrderAggregateRoot {
 		return transfer.getPayId();
 	}
 
-	public Boolean isCancelled() {
+	public boolean isCancelled() {
 		return status == AchTransferOrderStatus.CANCELLED;
 	}
 
-	public Boolean isPendingFirstSignature() {
+	public boolean isPendingFirstSignature() {
 		return status == AchTransferOrderStatus.PENDING_FIRST_SIGNATURE;
 	}
 
-	public Boolean isPendingSecondSignature() {
+	public boolean isPendingSecondSignature() {
 		return status == AchTransferOrderStatus.PENDING_SECOND_SIGNATURE;
 	}
 
-	public Boolean isPendingSend() {
+	public boolean isPendingSend() {
 		return status == AchTransferOrderStatus.PENDING_SEND;
 	}
 

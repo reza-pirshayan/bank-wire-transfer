@@ -1,5 +1,6 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.mapper;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
@@ -32,21 +33,22 @@ public class PendingSendAchTransferOrderMapper {
 		AchTransferOrderAggregateRoot.Builder builder = AchTransferOrderMappingHelper
 				.createBuilderFrom(achTransferOrderEntity);
 
-		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = builder.build();
-
 		FinanceOfficerRuleId firstSignerRuleId = new FinanceOfficerRuleId(
 				firstSignatureEntity.getSignatureInfo().getSignerId());
+		
+		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(
+				secondSignatureEntity.getSignatureInfo().getSignerId());
 
 		Long firstSignDateTime = firstSignatureEntity.getSignatureInfo().getDateTime();
 
-		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = achTransferOrderEntity
-				.getFirstSignerCandidateEntities().stream().map(f -> new FinanceOfficerRuleId(f.getId())).toList();
+		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = builder
+				.setFirstSignerCandidateIds(Arrays.asList(firstSignerRuleId))
+				.setSecondSignerCandidateIds(Arrays.asList(secondSignerRuleId)).build();
+
+		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = Arrays.asList(secondSignerRuleId);
 
 		AchTransferOrderAggregateRoot pendingSecondSignatureAchTransferOrder = pendingFirstSignatureAchTransferOrder
 				.signAsFirst(firstSignerRuleId, firstSignDateTime, refinedSecondSignerCandidateIds);
-
-		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(
-				secondSignatureEntity.getSignatureInfo().getSignerId());
 
 		Long secondSignDateTime = firstSignatureEntity.getSignatureInfo().getDateTime();
 

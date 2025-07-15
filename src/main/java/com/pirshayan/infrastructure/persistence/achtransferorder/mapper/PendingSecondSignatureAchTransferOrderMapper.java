@@ -1,5 +1,6 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.mapper;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
@@ -23,20 +24,21 @@ public class PendingSecondSignatureAchTransferOrderMapper {
 					firstSignatureEntity.getOrderId()));
 		}
 
+		FinanceOfficerRuleId firstSignerRuleId = new FinanceOfficerRuleId(
+				firstSignatureEntity.getSignatureInfo().getSignerId());
+
 		AchTransferOrderAggregateRoot.Builder builder = AchTransferOrderMappingHelper
 				.createBuilderFrom(achTransferOrderEntity);
 
-		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = builder.build();
-
-		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(
-				firstSignatureEntity.getSignatureInfo().getSignerId());
+		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = builder
+				.setFirstSignerCandidateIds(Arrays.asList(firstSignerRuleId)).build();
 
 		Long signDateTime = firstSignatureEntity.getSignatureInfo().getDateTime();
 
 		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = achTransferOrderEntity
-				.getFirstSignerCandidateEntities().stream().map(f -> new FinanceOfficerRuleId(f.getId())).toList();
+				.getSecondSignerCandidateEntities().stream().map(f -> new FinanceOfficerRuleId(f.getSignerId())).toList();
 
-		return pendingFirstSignatureAchTransferOrder.signAsFirst(signerRuleId, signDateTime,
+		return pendingFirstSignatureAchTransferOrder.signAsFirst(firstSignerRuleId, signDateTime,
 				refinedSecondSignerCandidateIds);
 	}
 
@@ -52,14 +54,14 @@ public class PendingSecondSignatureAchTransferOrderMapper {
 			throw new IllegalArgumentException(
 					"PendingSecondSignatureAchTransferOrderMapper.toEntity cannot accept null input");
 		}
-		
+
 		if (!achTransferOrderAggregateRoot.isPendingSecondSignature()) {
 			throw new IllegalStateException(String.format(
 					"ACH transfer order aggregate with ID [ %s ] and status [ %s ] cannot mapped to persistence entity as pending second signature",
 					achTransferOrderAggregateRoot.getAchTransferOrderId().getId(),
 					achTransferOrderAggregateRoot.getStatusString()));
 		}
-		
+
 		String id = achTransferOrderAggregateRoot.getAchTransferOrderId().getId();
 		Long signatureDateTime = achTransferOrderAggregateRoot.getFirstSignatureDateTime().get();
 		Long signerId = achTransferOrderAggregateRoot.getFirstSignerRuleId().get().getId();

@@ -44,14 +44,14 @@ public class AchTransferOrderMappingHelper {
 
 		if (!firstSignerCandidates.isEmpty()) {
 			builder.setFirstSignerCandidateIds(
-					firstSignerCandidates.stream().map(f -> new FinanceOfficerRuleId(f.getId())).toList());
+					firstSignerCandidates.stream().map(f -> new FinanceOfficerRuleId(f.getSignerId())).toList());
 		}
 
 		List<SecondSignerCandidateEntity> secondSigerCandidates = entity.getSecondSignerCandidateEntities();
 
 		if (!secondSigerCandidates.isEmpty()) {
-			builder.setFirstSignerCandidateIds(
-					secondSigerCandidates.stream().map(f -> new FinanceOfficerRuleId(f.getId())).toList());
+			builder.setSecondSignerCandidateIds(
+					secondSigerCandidates.stream().map(f -> new FinanceOfficerRuleId(f.getSignerId())).toList());
 		}
 	}
 
@@ -65,8 +65,8 @@ public class AchTransferOrderMappingHelper {
 		}
 
 		switch (personType) {
-		case "natural" -> builder.setDestinationBankAccountOwnerNatural();
-		case "legal" -> builder.setDestinationBankAccountOwnerLegal();
+		case "NATURAL" -> builder.setDestinationBankAccountOwnerNatural();
+		case "LEGAL" -> builder.setDestinationBankAccountOwnerLegal();
 		default -> throw new IllegalStateException(
 				String.format("ACH transfer order entity with ID [%s] and status [%s] has unknown person type [%s]",
 						entity.getOrderId(), entity.getStatus(), personType));
@@ -101,4 +101,5 @@ public class AchTransferOrderMappingHelper {
 		throw new IllegalStateException(String.format("ACH transfer order with ID [%s] has unknown status: %s",
 				root.getAchTransferOrderId().getId(), root.getStatusString()));
 	}
+
 }

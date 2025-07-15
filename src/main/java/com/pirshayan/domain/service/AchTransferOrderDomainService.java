@@ -7,6 +7,7 @@ import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleAggregateRoot;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 import com.pirshayan.domain.repository.FinanceOfficerRuleAggregateRepository;
+import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -21,7 +22,7 @@ public class AchTransferOrderDomainService {
 	public AchTransferOrderAggregateRoot sign(FinanceOfficerRuleAggregateRoot signerRule,
 			AchTransferOrderAggregateRoot achTransferOrder) {
 		if (achTransferOrder.isPendingFirstSignature()) {
-			
+
 			signerRule.ensureSufficientPrivilegesForFirstSignature(achTransferOrder.getTransferAmount());
 
 			if (achTransferOrder.getSecondSignerCandidateIds().isEmpty()) {
@@ -29,36 +30,34 @@ public class AchTransferOrderDomainService {
 						"ACH transfer order with ID [ %s ] and state [ %s ] cannot have null second signer candidate id list.",
 						achTransferOrder.getAchTransferOrderId().getId(), achTransferOrder.getStatusString()));
 			}
-			
+
 			List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = refineSecondSignerCandidates(signerRule,
 					achTransferOrder.getSecondSignerCandidateIds());
-			
-			AchTransferOrderAggregateRoot signedAchTransferOrder = achTransferOrder
-					.signAsFirst(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis(),refinedSecondSignerCandidateIds);
-			
-			return signedAchTransferOrder;
+
+			return achTransferOrder.signAsFirst(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis(),
+					refinedSecondSignerCandidateIds);
+
 		} else if (achTransferOrder.isPendingSecondSignature()) {
-			
-			signerRule.ensureSufficientPrivilegesForFirstSignature(achTransferOrder.getTransferAmount());
-			
-			if(achTransferOrder.getFirstSignatureDateTime().isEmpty() || achTransferOrder.getFirstSignerRuleId().isEmpty()) {
+
+			signerRule.ensureSufficientPrivilegesForSecondSignature(achTransferOrder.getTransferAmount());
+
+			if (achTransferOrder.getFirstSignatureDateTime().isEmpty()
+					|| achTransferOrder.getFirstSignerRuleId().isEmpty()) {
 				throw new IllegalStateException(String.format(
 						"ACH transfer order with ID [ %s ] and status [ %s ] must not have null first signature info.",
 						achTransferOrder.getAchTransferOrderId(), achTransferOrder.getStatusString()));
 			}
-			
+
 			FinanceOfficerRuleAggregateRoot firstSignerRule = financeOfficerRuleAggregateRepository
 					.findById(achTransferOrder.getFirstSignerRuleId().get());
-			
+
 			if (signerRule.getRank() < firstSignerRule.getRank()) {
-				throw new com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException(achTransferOrder, signerRule,
+				throw new SecondSignersRankLowerThanFirstSignersRankException(achTransferOrder, signerRule,
 						firstSignerRule);
 			}
-			
-			AchTransferOrderAggregateRoot signedAchTransferOrder = achTransferOrder
-					.signAsSecond(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis());
-			
-			return signedAchTransferOrder;
+
+			return achTransferOrder.signAsSecond(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis());
+
 		} else {
 			throw new IllegalStateException(
 					String.format("ACH transfer order with ID [ %s ] and status [ %s ] cannot be signed.",

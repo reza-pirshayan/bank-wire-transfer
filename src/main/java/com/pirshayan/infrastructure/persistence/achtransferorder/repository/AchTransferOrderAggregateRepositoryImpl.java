@@ -1,7 +1,7 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderId;
@@ -18,6 +18,7 @@ import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.PendingS
 import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.PendingSendAchTransferOrderMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
@@ -28,17 +29,24 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 	private final SecondSignatureEntityRepository secondSignatureEntityRepository;
 	private final FirstSignerCandidateEntityRepository firstSignerCandidateEntityRepository;
 	private final SecondSignerCandidateEntityRepository secondSignerCandidateEntityRepository;
+	private final EntityManager em;
 
 	public AchTransferOrderAggregateRepositoryImpl(AchTransferOrderEntityRepository achTransferOrderEntityRepository,
 			FirstSignatureEntityRepository firstSignatureEntityRepository,
 			SecondSignatureEntityRepository secondSignatureEntityRepository,
 			FirstSignerCandidateEntityRepository firstSignerCandidateEntityRepository,
-			SecondSignerCandidateEntityRepository secondSignerCandidateEntityRepository) {
+			SecondSignerCandidateEntityRepository secondSignerCandidateEntityRepository, EntityManager em) {
+		super();
 		this.achTransferOrderEntityRepository = achTransferOrderEntityRepository;
 		this.firstSignatureEntityRepository = firstSignatureEntityRepository;
 		this.secondSignatureEntityRepository = secondSignatureEntityRepository;
 		this.firstSignerCandidateEntityRepository = firstSignerCandidateEntityRepository;
 		this.secondSignerCandidateEntityRepository = secondSignerCandidateEntityRepository;
+		this.em = em;
+	}
+
+	public void clearPersistenceContext() {
+		em.clear(); // Ensures a fresh fetch from DB
 	}
 
 	@Override
@@ -102,12 +110,12 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 		List<FirstSignerCandidateEntity> firstCandidates = achTransferOrderAggregateRoot.getFirstSignerCandidateIds()
 				.stream().map(ruleId -> new FirstSignerCandidateEntity(achTransferOrderEntity, ruleId.getId()))
-				.collect(Collectors.toList());
+				.toList();
 		firstSignerCandidateEntityRepository.persist(firstCandidates);
 
 		List<SecondSignerCandidateEntity> secondCandidates = achTransferOrderAggregateRoot.getSecondSignerCandidateIds()
 				.stream().map(ruleId -> new SecondSignerCandidateEntity(achTransferOrderEntity, ruleId.getId()))
-				.collect(Collectors.toList());
+				.toList();
 		secondSignerCandidateEntityRepository.persist(secondCandidates);
 
 	}
@@ -133,8 +141,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 			List<SecondSignerCandidateEntity> secondCandidates = achTransferOrderAggregateRoot
 					.getSecondSignerCandidateIds().stream()
-					.map(ruleId -> new SecondSignerCandidateEntity(achTransferOrderEntity, ruleId.getId()))
-					.collect(Collectors.toList());
+					.map(ruleId -> new SecondSignerCandidateEntity(achTransferOrderEntity, ruleId.getId())).toList();
 			secondSignerCandidateEntityRepository.persist(secondCandidates);
 			return;
 		}
@@ -159,4 +166,63 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 				achTransferOrderEntity.getOrderId(), achTransferOrderEntity.getStatus()));
 	}
 
+	@Override
+	@Transactional
+	public void deleteById(AchTransferOrderId achTransferOrderId) {
+		if (achTransferOrderId == null) {
+			throw new IllegalArgumentException(
+					"AchTransferOrderAggregateRepository.deleteById cannot accept null as parameter");
+		}
+
+		Optional<AchTransferOrderEntity> achTransferOrderEntityOptional = achTransferOrderEntityRepository
+				.findByIdOptional(achTransferOrderId.getId());
+
+		if (achTransferOrderEntityOptional.isEmpty()) {
+			return;
+		}
+
+		if (achTransferOrderEntityOptional.get().getStatus() == 0) {
+
+			secondSignerCandidateEntityRepository.delete(
+					"DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
+					achTransferOrderId.getId());
+
+			firstSignerCandidateEntityRepository.delete(
+					"DELETE FROM FirstSignerCandidateEntity f WHERE f.achTransferOrderEntity.orderId = ?1",
+					achTransferOrderId.getId());
+
+			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+					achTransferOrderId.getId());
+
+			return;
+		}
+
+		if (achTransferOrderEntityOptional.get().getStatus() == 1) {
+
+			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.id = ?1",
+					achTransferOrderId.getId());
+
+			secondSignerCandidateEntityRepository.delete(
+					"DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
+					achTransferOrderId.getId());
+
+			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+					achTransferOrderId.getId());
+
+			return;
+		}
+
+		if (achTransferOrderEntityOptional.get().getStatus() == 2) {
+
+			secondSignatureEntityRepository.delete("DELETE FROM SecondSignatureEntity s WHERE s.id = ?1",
+					achTransferOrderId.getId());
+
+			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.id = ?1",
+					achTransferOrderId.getId());
+
+			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+					achTransferOrderId.getId());
+
+		}
+	}
 }

@@ -33,20 +33,21 @@ public class AchTransferOrderAggregateTestHelper {
 				.setFirstSignerCandidateIds(
 						Arrays.asList(new FinanceOfficerRuleId(1113018645L), new FinanceOfficerRuleId(1113222145L),
 								new FinanceOfficerRuleId(1113226189L), new FinanceOfficerRuleId(1113226440L),
-								new FinanceOfficerRuleId(111305254L), new FinanceOfficerRuleId(1113091628L)))
+								new FinanceOfficerRuleId(1113005254L), new FinanceOfficerRuleId(1113091628L)))
 				.setSecondSignerCandidateIds(Arrays.asList(new FinanceOfficerRuleId(1113018645L),
 						new FinanceOfficerRuleId(1113222145L), new FinanceOfficerRuleId(1113226189L),
-						new FinanceOfficerRuleId(1113226440L), new FinanceOfficerRuleId(111305254L),
-						new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(111254840L)))
+						new FinanceOfficerRuleId(1113226440L), new FinanceOfficerRuleId(1113005254L),
+						new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(1112504840L)))
 				.build();
 	}
 	
 	public static AchTransferOrderAggregateRoot buildPendingSecondSignatureAchTransferOrder() {
-		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(111305254L);
+		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(1113005254L);
 		Long signDateTime = System.currentTimeMillis();
 		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = Arrays
-				.asList(new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(111254840L));
+				.asList(new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(1112504840L));
 		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = buildPendingFirstSignatureAchTransferOrder();
 		return pendingFirstSignatureAchTransferOrder.signAsFirst(signerRuleId, signDateTime, refinedSecondSignerCandidateIds);
 	}
+	
 }

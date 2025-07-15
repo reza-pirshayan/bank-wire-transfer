@@ -19,19 +19,35 @@ public class FinanceOfficerRuleMapper {
 
 		Integer positionId = entity.getPositionEntity().getId();
 
-		return switch (positionId) {
-			case 10 -> builder.setCeo().build();
-			case 11 -> builder.setCfo().build();
-			case 12 -> builder.setFinanceDirectorGeneral().build();
-			case 13 -> builder.setDeputyFinanceDirectorGeneral().build();
-			case 22 -> builder.setRegionalDirectorGeneral().build();
-			case 23 -> builder.setDeputyRegionalDirectorGeneral().build();
-			case 24 -> builder.setBranchManager().build();
-			case 25 -> builder.setDeputyBranchFinanceManager().build();
-			case 30 -> builder.setPermanentFinamcePersonnel().build();
-			case 32 -> builder.setContranctFinancePersonnel().build();
+		switch (positionId) {
+			case 10 -> builder.setCeo();
+			case 11 -> builder.setCfo();
+			case 12 -> builder.setFinanceDirectorGeneral();
+			case 13 -> builder.setDeputyFinanceDirectorGeneral();
+			case 22 -> builder.setRegionalDirectorGeneral();
+			case 23 -> builder.setDeputyRegionalDirectorGeneral();
+			case 24 -> builder.setBranchManager();
+			case 25 -> builder.setDeputyBranchFinanceManager();
+			case 30 -> builder.setPermanentFinancePersonnel();
+			case 32 -> builder.setContranctFinancePersonnel();
 			default -> throw new IllegalStateException("Unexpected position ID: " + positionId);
-		};
+		}
+
+//		return switch (positionId) {
+//			case 10 -> builder.setCeo().build();
+//			case 11 -> builder.setCfo().build();
+//			case 12 -> builder.setFinanceDirectorGeneral().build();
+//			case 13 -> builder.setDeputyFinanceDirectorGeneral().build();
+//			case 22 -> builder.setRegionalDirectorGeneral().build();
+//			case 23 -> builder.setDeputyRegionalDirectorGeneral().build();
+//			case 24 -> builder.setBranchManager().build();
+//			case 25 -> builder.setDeputyBranchFinanceManager().build();
+//			case 30 -> builder.setPermanentFinancePersonnel().build();
+//			case 32 -> builder.setContranctFinancePersonnel().build();
+//			default -> throw new IllegalStateException("Unexpected position ID: " + positionId);
+//		};
+
+		return builder.build();
 
 	}
 

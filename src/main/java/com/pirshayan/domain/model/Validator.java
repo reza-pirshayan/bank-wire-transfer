@@ -51,6 +51,13 @@ public interface Validator {
 		return ibanNumber.mod(BigInteger.valueOf(97)).intValue() == 1;
 	}
 
+	static Boolean isValidMaxPermittedAmount(Long value) {
+		if (value >= 0 && value <= MAX_TRANSFER_AMOUNT)
+			return true;
+		else
+			return false;
+	}
+	
 	static Boolean isValidTransferAmount(Long value) {
 		if (value != null && value >= MIN_TRANSFER_AMOUNT && value <= MAX_TRANSFER_AMOUNT)
 			return true;
@@ -157,6 +164,8 @@ public interface Validator {
 		else
 			throw new InvalidDomainObjectException("invalid amount", "Transfer", "amount");
 	}
+	
+
 
 	static Integer validateTransferChecksum(Integer value) {
 		if (value >= 0 && value <= 9) {
@@ -191,5 +200,29 @@ public interface Validator {
 			return value;
 		else
 			throw new InvalidDomainObjectException("invalid ACH transfer order id", "AchTransferOrder", "id");
+	}
+	
+	static Long validateMaxSendAmount(Long value) {
+		if (isValidMaxPermittedAmount(value)) {
+			return value;
+		} else {
+			throw new InvalidDomainObjectException("invalid maxSendAmount", "FinanceOfficeRule", "maxSendAmount");
+		}
+	}
+	
+	static Long validateMaxFirstSignAmount(Long value) {
+		if (isValidMaxPermittedAmount(value)) {
+			return value;
+		} else {
+			throw new InvalidDomainObjectException("invalid maxFirstSignAmount", "FinanceOfficeRule", "maxFirstSignAmount");
+		}
+	}
+	
+	static Long validateMaxSecondSignAmount(Long value) {
+		if (isValidMaxPermittedAmount(value)) {
+			return value;
+		} else {
+			throw new InvalidDomainObjectException("invalid maxSecondSignAmount", "FinanceOfficerRule", "maxSecondSignAmount");
+		}
 	}
 }

@@ -3,16 +3,16 @@ package com.pirshayan.application.command;
 import java.util.Optional;
 
 public class SignAchTransferOrderCommand {
-	private final Long signerId;
+	private final Long signerRuleId;
 	private final String achTransferOrderId;
 
-	public SignAchTransferOrderCommand(Long signerId, String achTransferOrderId) {
-		this.signerId = signerId;
+	public SignAchTransferOrderCommand(Long signerRuleId, String achTransferOrderId) {
+		this.signerRuleId = signerRuleId;
 		this.achTransferOrderId = achTransferOrderId;
 	}
 
-	public Long getSignerId() {
-		return Optional.ofNullable(signerId)
+	public Long getSignerRuleId() {
+		return Optional.ofNullable(signerRuleId)
 				.orElseThrow(() -> new IllegalArgumentException("Signer ID cannot be EMPTY."));
 	}
 
