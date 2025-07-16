@@ -1,5 +1,6 @@
-package com.pirshayan.controller.rest.signachtransferorder;
+package com.pirshayan.controller.grpc.signachtransferorder;
 
+import com.pirshayan.SignAchTransferOrderResponse;
 import com.pirshayan.application.presenter.SignAchTransferOrderPresenter;
 import com.pirshayan.domain.exception.GeneralException;
 import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
@@ -11,102 +12,102 @@ import com.pirshayan.domain.repository.exception.FinanceOfficerRuleNotFoundExcep
 import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
 import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
+import io.grpc.Metadata;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.ws.rs.core.Response;
 
 @RequestScoped
 public class PresenterImpl implements SignAchTransferOrderPresenter {
-	private Response response;
+	private Uni<SignAchTransferOrderResponse> response;
 
-	public Response getResponse() {
+	public Uni<SignAchTransferOrderResponse> getResponse() {
 		return response;
-	}
-
-	public void setResponse(Response response) {
-		this.response = response;
 	}
 
 	@Override
 	public void presentSuccess() {
-
-		response = Response.status(Response.Status.OK).entity(new ResponseDto(0, "successful")).build();
+		response = Uni.createFrom()
+				.item(SignAchTransferOrderResponse.newBuilder().setCode("200").setMessage("successful").build());
 
 	}
 
 	@Override
 	public void presentFinanceOfficerRuleIsNotSignCandidateException(FinanceOfficerRuleIsNotSignCandidateException e) {
-
-		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(1, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.INVALID_ARGUMENT, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentAchTransferOrderSigner1AndSigner2CannotBeTheSameException(
 			AchTransferOrderSigner1AndSigner2CannotBeTheSameException e) {
-
-		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(3, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.INVALID_ARGUMENT, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentSecondSignersRankLowerThanFirstSignersRankException(
 			SecondSignersRankLowerThanFirstSignersRankException e) {
-
-		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(4, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.PERMISSION_DENIED, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentFinanceOfficerNotPrivilegedToSignAsFirstSignerException(
 			FinanceOfficerNotPrivilegedToSignAsFirstSignerException e) {
-
-		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(5, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.PERMISSION_DENIED, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentFinanceOfficerNotPrivilegedToSignAsSecondSignerException(
 			FinanceOfficerNotPrivilegedToSignAsSecondSignerException e) {
-
-		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(6, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.PERMISSION_DENIED, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentAchTransferOrderNotFoundException(AchTransferOrderNotFoundException e) {
-
-		response = Response.status(Response.Status.NOT_FOUND).entity(new ResponseDto(7, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.NOT_FOUND, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentFinanceOfficerRuleNotFoundException(FinanceOfficerRuleNotFoundException e) {
-
-		response = Response.status(Response.Status.NOT_FOUND).entity(new ResponseDto(8, e.getMessage())).build();
+		response = Uni.createFrom().failure(handleException(Status.NOT_FOUND, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentInconsistentAchTransferOrderException(InconsistentAchTransferOrderException e) {
-
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ResponseDto(9, e.getMessage()))
-				.build();
+		response = Uni.createFrom().failure(handleException(Status.INTERNAL, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentGeneralException(GeneralException e) {
-
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ResponseDto(9, e.getMessage()))
-				.build();
+		response = Uni.createFrom().failure(handleException(Status.INTERNAL, e.getMessage(), e.getCode()));
 
 	}
 
 	@Override
 	public void presentRuntimeException(RuntimeException e) {
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ResponseDto(-1, e.getMessage()))
-				.build();
-		
+		response = Uni.createFrom().failure(handleException(Status.INTERNAL, e.getMessage(), "-1"));
+
 	}
 
+	/**
+	 * Helper method to handle exceptions.
+	 */
+	private StatusRuntimeException handleException(Status status, String message, String code) {
+		Metadata metadata = new Metadata();
+		Metadata.Key<String> codeKey = Metadata.Key.of("error-code", Metadata.ASCII_STRING_MARSHALLER);
+		Metadata.Key<String> messageKey = Metadata.Key.of("error-message", Metadata.ASCII_STRING_MARSHALLER);
+
+		metadata.put(codeKey, code);
+		metadata.put(messageKey, message);
+
+		return status.asRuntimeException(metadata);
+	}
 }

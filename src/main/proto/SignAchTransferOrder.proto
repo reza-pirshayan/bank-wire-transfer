@@ -1,0 +1,21 @@
+syntax = "proto3";  // Correct syntax
+
+option java_multiple_files = true;  // Generates separate Java files for each message/type
+option java_package = "com.pirshayan";  // Java package for generated files
+option java_outer_classname = "SignAchTransferOrderProto";  // Wrapper class (for backward compatibility)
+
+package SignAchTransferOrder;  // Logical protobuf namespace
+
+service SignAchTransferOrder {
+  rpc SignAchTransferOrderService (SignAchTransferOrderRequest) returns (SignAchTransferOrderResponse);
+}
+
+message SignAchTransferOrderRequest {
+  int64 signerRuleId = 1;
+  string orderId = 2;
+}
+
+message SignAchTransferOrderResponse {
+  string code = 1;
+  string message = 2;
+}

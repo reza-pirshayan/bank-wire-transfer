@@ -15,8 +15,8 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class Controller {
-	PresenterImpl presenter;
-	SignAchTransferOrderCommandHandler handler;
+	private PresenterImpl presenter;
+	private SignAchTransferOrderCommandHandler handler;
 
 	public Controller(PresenterImpl presenter, SignAchTransferOrderCommandHandler handler) {
 		this.presenter = presenter;
