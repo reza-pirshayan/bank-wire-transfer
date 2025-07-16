@@ -27,8 +27,9 @@ class Transfer {
 		destinationBankAccount = builder.destinationBankAccount;
 		owner = builder.owner;
 		this.checksum = Validator.validateTransferChecksum(builder.checksum);
-		this.description = Optional.ofNullable(Validator.validateDescription(builder.description));
-		this.payId = Optional.ofNullable(Validator.validatePayId(builder.payId));
+		this.description = Optional.ofNullable(builder.description)
+				.map(Validator::validateDescription);
+		this.payId = Optional.ofNullable(builder.payId).map(Validator::validatePayId);
 	}
 
 	public String getId() {

@@ -1,5 +1,39 @@
 package com.pirshayan.application.presenter;
 
+import com.pirshayan.domain.exception.GeneralException;
+import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
+import com.pirshayan.domain.model.achtransferorder.exception.FinanceOfficerRuleIsNotSignCandidateException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
+import com.pirshayan.domain.repository.exception.AchTransferOrderNotFoundException;
+import com.pirshayan.domain.repository.exception.FinanceOfficerRuleNotFoundException;
+import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
+import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
+
 public interface SignAchTransferOrderPresenter {
-	
+	public void presentSuccess();
+
+	public void presentFinanceOfficerRuleIsNotSignCandidateException(FinanceOfficerRuleIsNotSignCandidateException e);
+
+	public void presentAchTransferOrderSigner1AndSigner2CannotBeTheSameException(
+			AchTransferOrderSigner1AndSigner2CannotBeTheSameException e);
+
+	public void presentSecondSignersRankLowerThanFirstSignersRankException(
+			SecondSignersRankLowerThanFirstSignersRankException e);
+
+	public void presentFinanceOfficerNotPrivilegedToSignAsFirstSignerException(
+			FinanceOfficerNotPrivilegedToSignAsFirstSignerException e);
+
+	public void presentFinanceOfficerNotPrivilegedToSignAsSecondSignerException(
+			FinanceOfficerNotPrivilegedToSignAsSecondSignerException e);
+
+	public void presentAchTransferOrderNotFoundException(AchTransferOrderNotFoundException e);
+
+	public void presentFinanceOfficerRuleNotFoundException(FinanceOfficerRuleNotFoundException e);
+
+	public void presentInconsistentAchTransferOrderException(InconsistentAchTransferOrderException e);
+
+	public void presentGeneralException(GeneralException e);
+
+	public void presentRuntimeException(RuntimeException e);
 }
