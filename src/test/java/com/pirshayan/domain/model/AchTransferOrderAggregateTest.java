@@ -18,14 +18,15 @@ import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
 public class AchTransferOrderAggregateTest {
 	@Test
-	public void sign_as_first_ach_transfer_order_should_be_successful() {
+	void sign_as_first_ach_transfer_order_should_be_successful() {
 		// Arrange
+		String orderId = "025071200001"; 
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingFirstSignatureAchTransferOrder();
-		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(111305254L);
+				.buildPendingFirstSignatureAchTransferOrder(orderId);
+		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(1113005254L);
 		Long signDateTime = System.currentTimeMillis();
 		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = Arrays
-				.asList(new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(111254840L));
+				.asList(new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(1112504840L));
 		// Act
 		AchTransferOrderAggregateRoot signedTransferOrder = sut.signAsFirst(signerRuleId, signDateTime,
 				refinedSecondSignerCandidateIds);
@@ -42,14 +43,15 @@ public class AchTransferOrderAggregateTest {
 	}
 
 	@Test
-	public void sign_as_first_an_already_first_signed_ach_transfer_order_should_throw_IllegalStateException() {
+	void sign_as_first_an_already_first_signed_ach_transfer_order_should_throw_IllegalStateException() {
 		// Arrange
+		String orderId = "025071200001";
 		FinanceOfficerRuleId firstSignerRuleId = new FinanceOfficerRuleId(111305254L);
 		Long signDateTime = System.currentTimeMillis();
 		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = Arrays
 				.asList(new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(111254840L));
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 
 		// Act & Assert
 		assertThrows(IllegalStateException.class,
@@ -57,14 +59,15 @@ public class AchTransferOrderAggregateTest {
 	}
 
 	@Test
-	public void sign_as_first_ach_transfer_order_signer_is_not_candidate_should_throw_FinanceOfficerRuleIsNotSignCandidateException() {
+	void sign_as_first_ach_transfer_order_signer_is_not_candidate_should_throw_FinanceOfficerRuleIsNotSignCandidateException() {
 		// Arrange
+		String orderId = "025071200001";
 		FinanceOfficerRuleId invalidSignerId = new FinanceOfficerRuleId(111254840L);
 		Long signDateTime = System.currentTimeMillis();
 		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = Arrays
 				.asList(new FinanceOfficerRuleId(1113091628L), new FinanceOfficerRuleId(111254840L));
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingFirstSignatureAchTransferOrder();
+				.buildPendingFirstSignatureAchTransferOrder(orderId);
 
 		// Act & Assert
 		assertThrows(FinanceOfficerRuleIsNotSignCandidateException.class, () -> {
@@ -73,12 +76,12 @@ public class AchTransferOrderAggregateTest {
 	}
 
 	@Test
-	public void sign_ach_transfer_order_as_second_should_be_successful() {
+	void sign_ach_transfer_order_as_second_should_be_successful() {
 		// Arrange
-		// Arrange
-		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(111254840L);
+		String orderId = "025071200001";
+		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(1112504840L);
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 		Long signDateTime = System.currentTimeMillis();
 
 		// Act
@@ -97,10 +100,11 @@ public class AchTransferOrderAggregateTest {
 	@Test
 	void sign_as_second_ach_transfer_order_with_pending_first_signature_state_should_throw_IllegalStateException() {
 		// Arrange
-		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(111254840L);
+		String orderId = "025071200001";
+		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(1112504840L);
 		Long signDateTime = System.currentTimeMillis();
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingFirstSignatureAchTransferOrder();
+				.buildPendingFirstSignatureAchTransferOrder(orderId);
 
 		// Act & Assert
 		assertThrows(IllegalStateException.class, () -> sut.signAsSecond(secondSignerRuleId, signDateTime));
@@ -109,10 +113,11 @@ public class AchTransferOrderAggregateTest {
 	@Test
 	void sign_as_second_ach_transfer_order_by_the_same_signer_as_signer1_should_throw_AchTransferOrderSigner1AndSigner2CannotBeTheSameException() {
 		// Arrange
-		FinanceOfficerRuleId invalidSignerRuleId = new FinanceOfficerRuleId(111305254L);
+		String orderId = "025071200001";
+		FinanceOfficerRuleId invalidSignerRuleId = new FinanceOfficerRuleId(1113005254L);
 		Long signDateTime = System.currentTimeMillis();
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 
 		// Act & Assert
 		assertThrows(AchTransferOrderSigner1AndSigner2CannotBeTheSameException.class, () -> {
@@ -123,10 +128,11 @@ public class AchTransferOrderAggregateTest {
 	@Test
 	void sign_as_second_ach_transfer_order_when_signer_is_not_a_candidate_should_throw_FinanceOfficerRuleIsNotSignCandidateException() {
 		// Arrange
+		String orderId = "025071200001";
 		FinanceOfficerRuleId invalidSignerRuleId = new FinanceOfficerRuleId(1113226440L);
 		Long signDateTime = System.currentTimeMillis();
 		AchTransferOrderAggregateRoot sut = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 
 		// Act & Assert
 		assertThrows(FinanceOfficerRuleIsNotSignCandidateException.class, () -> {

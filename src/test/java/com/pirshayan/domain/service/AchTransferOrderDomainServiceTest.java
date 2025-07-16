@@ -33,10 +33,11 @@ class AchTransferOrderDomainServiceTest {
 	@Test
 	void sign_pending_ach_transfer_order_with_status_pending_first_signature__should_be_successful() {
 		// Arrange
+		String orderId = "025071200001";
 		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(1113005254L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerRuleId);
 		AchTransferOrderAggregateRoot pendingFirstAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingFirstSignatureAchTransferOrder();
+				.buildPendingFirstSignatureAchTransferOrder(orderId);
 		List<FinanceOfficerRuleId> refinedSecondSignerCandidatesIds = Arrays.asList(
 				new FinanceOfficerRuleId(1113018645L), new FinanceOfficerRuleId(1113091628L),
 				new FinanceOfficerRuleId(1112504840L));
@@ -56,8 +57,9 @@ class AchTransferOrderDomainServiceTest {
 	@Test
 	void sign_ach_transfer_order_by_a_signer_without_first_sign_permission__should_throw_FinanceOfficerNotPrivilegedToSignAsFirstSignerException() {
 		// Arrange
+		String orderId = "025071200001";
 		AchTransferOrderAggregateRoot pendingFirstAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingFirstSignatureAchTransferOrder();
+				.buildPendingFirstSignatureAchTransferOrder(orderId);
 		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(1113222145L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerRuleId);
 
@@ -69,8 +71,9 @@ class AchTransferOrderDomainServiceTest {
 	@Test
 	void sign_ach_transfer_order_with_status_pending_second_signature__should_be_successful() {
 		// Arrange
+		String orderId = "025071200001";
 		AchTransferOrderAggregateRoot pendingSecondAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(1112504840L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerRuleId);
 
@@ -88,8 +91,9 @@ class AchTransferOrderDomainServiceTest {
 	@Test
 	void sign_ach_transfer_order_with_status_pending_second_signature_by_a_signer_without_second_sign_permission__should_throw_FinanceOfficerNotPrivilegedToSignAsSecondSignerException() {
 		// Arrange
+		String orderId = "025071200001";
 		AchTransferOrderAggregateRoot pendingSecondAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 		FinanceOfficerRuleId signerId = new FinanceOfficerRuleId(1113018645L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerId);
 
@@ -101,8 +105,9 @@ class AchTransferOrderDomainServiceTest {
 	@Test
 	void sign_ach_transfer_order_with_status_pending_second_signature_by_first_signer__should_throw_AchTransferOrderSigner1AndSigner2CannotBeTheSameException() {
 		// Arrange
+		String orderId = "025071200001";
 		AchTransferOrderAggregateRoot pendingSecondAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 		FinanceOfficerRuleId financeOfficerId = new FinanceOfficerRuleId(1113005254L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(financeOfficerId);
 
@@ -114,8 +119,9 @@ class AchTransferOrderDomainServiceTest {
 	@Test
 	void sign_ach_transfer_order_with_status_pending_second_signature_by_a_lower_rank_signer_than_the_first_one__should_throw_SecondSignersRankLowerThanFirstSignersRankException() {
 		// Arrange
+		String orderId = "025071200001";
 		AchTransferOrderAggregateRoot pendingSecondAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder();
+				.buildPendingSecondSignatureAchTransferOrder(orderId);
 		FinanceOfficerRuleId signerId = new FinanceOfficerRuleId(1113226189L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerId);
 

@@ -21,30 +21,32 @@ import jakarta.inject.Inject;
 class AchTransferOrderApplicationServiceTest {
 	@Inject
 	AchTransferOrderAggregateRepository achTransferOrderAggregateRepository;
-	
-	@Inject 
+
+	@Inject
 	AchTransferOrderApplicationService sut;
-	
+
 	@Test
 	void sign_ach_transfer_order_with_status_pending_first_signature__should_be_successful() {
 		// Arrange
 		Long commandSignerRuleId = 1113005254L;
-		String commandAchTransferOrderId = "2025071200001";
-		SignAchTransferOrderCommand command = new SignAchTransferOrderCommand(commandSignerRuleId, commandAchTransferOrderId);
-		AchTransferOrderId achTransferOrderId = new AchTransferOrderId(commandAchTransferOrderId);
+		String commandOrderId = "2025071200001";
+		SignAchTransferOrderCommand command = new SignAchTransferOrderCommand(commandSignerRuleId, commandOrderId);
+		AchTransferOrderId achTransferOrderId = new AchTransferOrderId(commandOrderId);
 		achTransferOrderAggregateRepository.deleteById(achTransferOrderId);
-		
-		AchTransferOrderAggregateRoot achTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingFirstSignatureAchTransferOrder();
-		achTransferOrderAggregateRepository.create(achTransferOrder);
 
+		AchTransferOrderAggregateRoot achTransferOrder = AchTransferOrderAggregateTestHelper
+				.buildPendingFirstSignatureAchTransferOrder(commandOrderId);
+		achTransferOrderAggregateRepository.create(achTransferOrder);
+		
+		achTransferOrderAggregateRepository.clearPersistenceContext();
 		
 		// Act
 		sut.sign(command);
-		
+
 		// Assert
 		achTransferOrderAggregateRepository.clearPersistenceContext();
-		AchTransferOrderAggregateRoot signedAchTransferOrder =  achTransferOrderAggregateRepository.findById(achTransferOrderId);
+		AchTransferOrderAggregateRoot signedAchTransferOrder = achTransferOrderAggregateRepository
+				.findById(achTransferOrderId);
 		assertTrue(signedAchTransferOrder.isPendingSecondSignature());
 		assertTrue(signedAchTransferOrder.getFirstSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getFirstSignatureDateTime().isPresent());
@@ -52,29 +54,41 @@ class AchTransferOrderApplicationServiceTest {
 		assertTrue(signedAchTransferOrder.getFirstSignerCandidateIds().isEmpty());
 		assertFalse(signedAchTransferOrder.getSecondSignerCandidateIds().isEmpty());
 	}
-	
+
 	@Test
-	@Disabled
 	void sign_ach_transfer_order_with_status_pending_second_signature__should_be_successful() {
 		// Arrange
-//		AchTransferOrderAggregateRoot achTransferOrder = AchTransferOrderAggregateTestHelper
-//				.buildPendingFirstSignatureAchTransferOrder();
-//		achTransferOrderAggregateRepository.create(achTransferOrder);
-		Long signerRuleId = 1112504840L;
-		String achTransferOrderId = "2025071200001";
-//		SignAchTransferOrderCommand command = new SignAchTransferOrderCommand(signerRuleId, achTransferOrderId);
-//		
-//		// Act
-//		sut.sign(command);
+		Long commandFirstSignerRuleId = 1113005254L;
+		Long commandSecondSignerRuleId = 1112504840L;
+		String commandOrderId = "2025071200002";
+		AchTransferOrderId achTransferOrderId = new AchTransferOrderId(commandOrderId);
 		
+		achTransferOrderAggregateRepository.deleteById(achTransferOrderId);
+		
+		AchTransferOrderAggregateRoot achTransferOrder = AchTransferOrderAggregateTestHelper
+				.buildPendingFirstSignatureAchTransferOrder(commandOrderId);
+		achTransferOrderAggregateRepository.create(achTransferOrder);
+		
+		SignAchTransferOrderCommand firstSigncommand = new SignAchTransferOrderCommand(commandFirstSignerRuleId, commandOrderId);
+		
+		sut.sign(firstSigncommand);
+		
+		achTransferOrderAggregateRepository.clearPersistenceContext();
+		
+		SignAchTransferOrderCommand secondSigncommand = new SignAchTransferOrderCommand(commandSecondSignerRuleId, commandOrderId);
+
+		// Act
+		sut.sign(secondSigncommand);
+
 		// Assert
 		achTransferOrderAggregateRepository.clearPersistenceContext();
-		AchTransferOrderId achTransferOrderAggregateId = new AchTransferOrderId(achTransferOrderId);
-		AchTransferOrderAggregateRoot signedAchTransferOrder =  achTransferOrderAggregateRepository.findById(achTransferOrderAggregateId);
+		AchTransferOrderId achTransferOrderAggregateId = new AchTransferOrderId(commandOrderId);
+		AchTransferOrderAggregateRoot signedAchTransferOrder = achTransferOrderAggregateRepository
+				.findById(achTransferOrderAggregateId);
 		assertTrue(signedAchTransferOrder.isPendingSend());
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
-		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get().getId(), signerRuleId);
+		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get().getId(), commandSecondSignerRuleId);
 		assertTrue(signedAchTransferOrder.getSecondSignerCandidateIds().isEmpty());
 	}
 }
