@@ -108,12 +108,12 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 				.toEntity(achTransferOrderAggregateRoot);
 		achTransferOrderEntityRepository.persist(achTransferOrderEntity);
 
-		List<FirstSignerCandidateEntity> firstCandidates = achTransferOrderAggregateRoot.getFirstSignerCandidateIds()
+		List<FirstSignerCandidateEntity> firstCandidates = achTransferOrderAggregateRoot.getFirstSignerCandidateRuleIds()
 				.stream().map(ruleId -> new FirstSignerCandidateEntity(achTransferOrderEntity, ruleId.getId()))
 				.toList();
 		firstSignerCandidateEntityRepository.persist(firstCandidates);
 
-		List<SecondSignerCandidateEntity> secondCandidates = achTransferOrderAggregateRoot.getSecondSignerCandidateIds()
+		List<SecondSignerCandidateEntity> secondCandidates = achTransferOrderAggregateRoot.getSecondSignerCandidateRuleIds()
 				.stream().map(ruleId -> new SecondSignerCandidateEntity(achTransferOrderEntity, ruleId.getId()))
 				.toList();
 		secondSignerCandidateEntityRepository.persist(secondCandidates);
@@ -140,7 +140,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			secondSignerCandidateEntityRepository.deleteByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId());
 
 			List<SecondSignerCandidateEntity> secondCandidates = achTransferOrderAggregateRoot
-					.getSecondSignerCandidateIds().stream()
+					.getSecondSignerCandidateRuleIds().stream()
 					.map(ruleId -> new SecondSignerCandidateEntity(achTransferOrderEntity, ruleId.getId())).toList();
 			secondSignerCandidateEntityRepository.persist(secondCandidates);
 			return;

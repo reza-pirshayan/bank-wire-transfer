@@ -50,8 +50,8 @@ class AchTransferOrderApplicationServiceTest {
 		assertTrue(signedAchTransferOrder.getFirstSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getFirstSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getFirstSignerRuleId().get().getId(), commandSignerRuleId);
-		assertTrue(signedAchTransferOrder.getFirstSignerCandidateIds().isEmpty());
-		assertFalse(signedAchTransferOrder.getSecondSignerCandidateIds().isEmpty());
+		assertTrue(signedAchTransferOrder.getFirstSignerCandidateRuleIds().isEmpty());
+		assertFalse(signedAchTransferOrder.getSecondSignerCandidateRuleIds().isEmpty());
 	}
 
 	@Test
@@ -88,6 +88,6 @@ class AchTransferOrderApplicationServiceTest {
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get().getId(), commandSecondSignerRuleId);
-		assertTrue(signedAchTransferOrder.getSecondSignerCandidateIds().isEmpty());
+		assertTrue(signedAchTransferOrder.getSecondSignerCandidateRuleIds().isEmpty());
 	}
 }

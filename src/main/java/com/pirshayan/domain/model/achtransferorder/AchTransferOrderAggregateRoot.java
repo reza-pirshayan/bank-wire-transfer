@@ -19,8 +19,8 @@ public class AchTransferOrderAggregateRoot {
 	private final Long receivedDateTime;
 	private final Transfer transfer;
 	private final AchTransferOrderStatus status;
-	private final List<FinanceOfficerRuleId> firstSignerCandidateIds;
-	private final List<FinanceOfficerRuleId> secondSignerCandidateIds;
+	private final List<FinanceOfficerRuleId> firstSignerCandidateRuleIds;
+	private final List<FinanceOfficerRuleId> secondSignerCandidateRuleIds;
 	private final Optional<SignatureInfo> firstSignature;
 	private final Optional<SignatureInfo> secondSignature;
 	private final Optional<Long> cancelDateTime;
@@ -30,8 +30,8 @@ public class AchTransferOrderAggregateRoot {
 		this.receivedDateTime = builder.receivedDateTime;
 		this.transfer = builder.transfer;
 		this.status = builder.status;
-		this.firstSignerCandidateIds = builder.firstSignerCandidateIds;
-		this.secondSignerCandidateIds = builder.secondSignerCandidateIds;
+		this.firstSignerCandidateRuleIds = builder.firstSignerCandidateRuleIds;
+		this.secondSignerCandidateRuleIds = builder.secondSignerCandidateRuleIds;
 		this.firstSignature = Optional.ofNullable(builder.firstSignature);
 		this.secondSignature = Optional.ofNullable(builder.secondSignature);
 		this.cancelDateTime = Optional.ofNullable(builder.cancelDateTime);
@@ -117,12 +117,12 @@ public class AchTransferOrderAggregateRoot {
 		return status == AchTransferOrderStatus.PENDING_SEND;
 	}
 
-	public List<FinanceOfficerRuleId> getFirstSignerCandidateIds() {
-		return firstSignerCandidateIds;
+	public List<FinanceOfficerRuleId> getFirstSignerCandidateRuleIds() {
+		return firstSignerCandidateRuleIds;
 	}
 
-	public List<FinanceOfficerRuleId> getSecondSignerCandidateIds() {
-		return secondSignerCandidateIds;
+	public List<FinanceOfficerRuleId> getSecondSignerCandidateRuleIds() {
+		return secondSignerCandidateRuleIds;
 	}
 
 	public Optional<Long> getFirstSignatureDateTime() {
@@ -170,8 +170,8 @@ public class AchTransferOrderAggregateRoot {
 		private String transferDescription;
 		private String transferPayId;
 		private AchTransferOrderStatus status;
-		private List<FinanceOfficerRuleId> firstSignerCandidateIds;
-		private List<FinanceOfficerRuleId> secondSignerCandidateIds;
+		private List<FinanceOfficerRuleId> firstSignerCandidateRuleIds;
+		private List<FinanceOfficerRuleId> secondSignerCandidateRuleIds;
 		private Long firstSignatureDateTime;
 		private FinanceOfficerRuleId firstSignerRuleId;
 		private Long secondSignatureDateTime;
@@ -199,8 +199,8 @@ public class AchTransferOrderAggregateRoot {
 			this.transferChecksum = transferChecksum;
 			this.transferDestinationBankAccountOwnerPersonType = PersonType.NATURAL;
 			this.status = AchTransferOrderStatus.PENDING_FIRST_SIGNATURE;
-			this.firstSignerCandidateIds = new ArrayList<>();
-			this.secondSignerCandidateIds = new ArrayList<>();
+			this.firstSignerCandidateRuleIds = new ArrayList<>();
+			this.firstSignerCandidateRuleIds = new ArrayList<>();
 		}
 
 		public Builder setDestinationBankAccountOwnerNatural() {
@@ -249,13 +249,13 @@ public class AchTransferOrderAggregateRoot {
 			return this;
 		}
 
-		public Builder setFirstSignerCandidateIds(List<FinanceOfficerRuleId> firstSignerCandidateIds) {
-			this.firstSignerCandidateIds = firstSignerCandidateIds;
+		public Builder setFirstSignerCandidateIds(List<FinanceOfficerRuleId> firstSignerCandidateRuleIds) {
+			this.firstSignerCandidateRuleIds = firstSignerCandidateRuleIds;
 			return this;
 		}
 
-		public Builder setSecondSignerCandidateIds(List<FinanceOfficerRuleId> secondSignerCandidateIds) {
-			this.secondSignerCandidateIds = secondSignerCandidateIds;
+		public Builder setSecondSignerCandidateIds(List<FinanceOfficerRuleId> secondSignerCandidateRuleIds) {
+			this.secondSignerCandidateRuleIds = secondSignerCandidateRuleIds;
 			return this;
 		}
 
@@ -329,7 +329,7 @@ public class AchTransferOrderAggregateRoot {
 							getAchTransferOrderId().getId(), status));
 		}
 
-		ensureSignerRuleIdIsInCandidateList(signerRuleId, firstSignerCandidateIds);
+		ensureSignerRuleIdIsInCandidateList(signerRuleId, firstSignerCandidateRuleIds);
 
 		return cloneBuilder().setPendingSecondSignature().setFirstSignature(signerRuleId, signDateTime)
 				.setFirstSignerCandidateIds(new ArrayList<>())
@@ -343,10 +343,17 @@ public class AchTransferOrderAggregateRoot {
 							getAchTransferOrderId().getId(), status));
 		}
 
+		if (getFirstSignatureDateTime().isEmpty()
+				|| getFirstSignerRuleId().isEmpty()) {
+			throw new IllegalStateException(String.format(
+					"ACH transfer order with ID [ %s ] and status [ %s ] must not have null first signature info.",
+					getAchTransferOrderId().getId(), getStatusString()));
+		}
+		
 		if (firstSignature.get().getSignerRuleId().equals(signerRuleId))
 			throw new AchTransferOrderSigner1AndSigner2CannotBeTheSameException(this);
 
-		ensureSignerRuleIdIsInCandidateList(signerRuleId, secondSignerCandidateIds);
+		ensureSignerRuleIdIsInCandidateList(signerRuleId, secondSignerCandidateRuleIds);
 
 		return cloneBuilder().setPendingSend().setSecondSignature(signerRuleId, signDateTime)
 				.setSecondSignerCandidateIds(new ArrayList<>()).build();
@@ -367,12 +374,12 @@ public class AchTransferOrderAggregateRoot {
 		case PENDING_SEND -> builder.setPendingSend();
 		}
 
-		if (!firstSignerCandidateIds.isEmpty()) {
-			builder.setFirstSignerCandidateIds(firstSignerCandidateIds);
+		if (!firstSignerCandidateRuleIds.isEmpty()) {
+			builder.setFirstSignerCandidateIds(firstSignerCandidateRuleIds);
 		}
 
-		if (!secondSignerCandidateIds.isEmpty()) {
-			builder.setSecondSignerCandidateIds(secondSignerCandidateIds);
+		if (!secondSignerCandidateRuleIds.isEmpty()) {
+			builder.setSecondSignerCandidateIds(secondSignerCandidateRuleIds);
 		}
 
 		firstSignature.ifPresent(

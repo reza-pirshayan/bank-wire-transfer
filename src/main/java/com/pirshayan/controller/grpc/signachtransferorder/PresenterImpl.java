@@ -10,7 +10,6 @@ import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNot
 import com.pirshayan.domain.repository.exception.AchTransferOrderNotFoundException;
 import com.pirshayan.domain.repository.exception.FinanceOfficerRuleNotFoundException;
 import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
-import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
 import io.grpc.Metadata;
 import io.grpc.Status;
@@ -43,13 +42,6 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	public void presentAchTransferOrderSigner1AndSigner2CannotBeTheSameException(
 			AchTransferOrderSigner1AndSigner2CannotBeTheSameException e) {
 		response = Uni.createFrom().failure(handleException(Status.INVALID_ARGUMENT, e.getMessage(), e.getCode()));
-
-	}
-
-	@Override
-	public void presentSecondSignersRankLowerThanFirstSignersRankException(
-			SecondSignersRankLowerThanFirstSignersRankException e) {
-		response = Uni.createFrom().failure(handleException(Status.PERMISSION_DENIED, e.getMessage(), e.getCode()));
 
 	}
 

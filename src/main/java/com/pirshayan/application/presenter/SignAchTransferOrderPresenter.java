@@ -8,7 +8,6 @@ import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNot
 import com.pirshayan.domain.repository.exception.AchTransferOrderNotFoundException;
 import com.pirshayan.domain.repository.exception.FinanceOfficerRuleNotFoundException;
 import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
-import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
 public interface SignAchTransferOrderPresenter {
 	public void presentSuccess();
@@ -17,9 +16,6 @@ public interface SignAchTransferOrderPresenter {
 
 	public void presentAchTransferOrderSigner1AndSigner2CannotBeTheSameException(
 			AchTransferOrderSigner1AndSigner2CannotBeTheSameException e);
-
-	public void presentSecondSignersRankLowerThanFirstSignersRankException(
-			SecondSignersRankLowerThanFirstSignersRankException e);
 
 	public void presentFinanceOfficerNotPrivilegedToSignAsFirstSignerException(
 			FinanceOfficerNotPrivilegedToSignAsFirstSignerException e);

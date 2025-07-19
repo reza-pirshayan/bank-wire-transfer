@@ -16,7 +16,7 @@ import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSig
 import com.pirshayan.domain.model.achtransferorder.exception.FinanceOfficerRuleIsNotSignCandidateException;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
-public class AchTransferOrderAggregateTest {
+class AchTransferOrderAggregateTest {
 	@Test
 	void sign_as_first_ach_transfer_order_should_be_successful() {
 		// Arrange
@@ -37,9 +37,9 @@ public class AchTransferOrderAggregateTest {
 		assertTrue(signedTransferOrder.getFirstSignerRuleId().isPresent());
 		assertEquals(signDateTime, signedTransferOrder.getFirstSignatureDateTime().get());
 		assertEquals(signerRuleId, signedTransferOrder.getFirstSignerRuleId().get());
-		assertTrue(signedTransferOrder.getFirstSignerCandidateIds().isEmpty());
-		assertFalse(signedTransferOrder.getSecondSignerCandidateIds().isEmpty());
-		assertEquals(refinedSecondSignerCandidateIds, signedTransferOrder.getSecondSignerCandidateIds());
+		assertTrue(signedTransferOrder.getFirstSignerCandidateRuleIds().isEmpty());
+		assertFalse(signedTransferOrder.getSecondSignerCandidateRuleIds().isEmpty());
+		assertEquals(refinedSecondSignerCandidateIds, signedTransferOrder.getSecondSignerCandidateRuleIds());
 	}
 
 	@Test
@@ -93,8 +93,8 @@ public class AchTransferOrderAggregateTest {
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getSecondSignatureDateTime().get(), signDateTime);
 		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get(), secondSignerRuleId);
-		assertTrue(signedAchTransferOrder.getFirstSignerCandidateIds().isEmpty());
-		assertTrue(signedAchTransferOrder.getSecondSignerCandidateIds().isEmpty());
+		assertTrue(signedAchTransferOrder.getFirstSignerCandidateRuleIds().isEmpty());
+		assertTrue(signedAchTransferOrder.getSecondSignerCandidateRuleIds().isEmpty());
 	}
 
 	@Test

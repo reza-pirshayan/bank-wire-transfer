@@ -7,7 +7,6 @@ import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleAggregateRoot;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 import com.pirshayan.domain.repository.FinanceOfficerRuleAggregateRepository;
-import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -25,14 +24,14 @@ public class AchTransferOrderDomainService {
 
 			signerRule.ensureSufficientPrivilegesForFirstSignature(achTransferOrder.getTransferAmount());
 
-			if (achTransferOrder.getSecondSignerCandidateIds().isEmpty()) {
+			if (achTransferOrder.getSecondSignerCandidateRuleIds().isEmpty()) {
 				throw new IllegalStateException(String.format(
 						"ACH transfer order with ID [ %s ] and state [ %s ] cannot have null second signer candidate id list.",
 						achTransferOrder.getAchTransferOrderId().getId(), achTransferOrder.getStatusString()));
 			}
 
-			List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = refineSecondSignerCandidates(signerRule,
-					achTransferOrder.getSecondSignerCandidateIds());
+			List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = refineSecondSignerCandidateRuleIds(signerRule,
+					achTransferOrder.getSecondSignerCandidateRuleIds());
 
 			return achTransferOrder.signAsFirst(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis(),
 					refinedSecondSignerCandidateIds);
@@ -40,21 +39,6 @@ public class AchTransferOrderDomainService {
 		} else if (achTransferOrder.isPendingSecondSignature()) {
 
 			signerRule.ensureSufficientPrivilegesForSecondSignature(achTransferOrder.getTransferAmount());
-
-			if (achTransferOrder.getFirstSignatureDateTime().isEmpty()
-					|| achTransferOrder.getFirstSignerRuleId().isEmpty()) {
-				throw new IllegalStateException(String.format(
-						"ACH transfer order with ID [ %s ] and status [ %s ] must not have null first signature info.",
-						achTransferOrder.getAchTransferOrderId(), achTransferOrder.getStatusString()));
-			}
-
-			FinanceOfficerRuleAggregateRoot firstSignerRule = financeOfficerRuleAggregateRepository
-					.findById(achTransferOrder.getFirstSignerRuleId().get());
-
-			if (signerRule.getRank() < firstSignerRule.getRank()) {
-				throw new SecondSignersRankLowerThanFirstSignersRankException(achTransferOrder, signerRule,
-						firstSignerRule);
-			}
 
 			return achTransferOrder.signAsSecond(signerRule.getFinanceOfficerRuleId(), System.currentTimeMillis());
 
@@ -65,19 +49,20 @@ public class AchTransferOrderDomainService {
 		}
 	}
 
-	private List<FinanceOfficerRuleId> refineSecondSignerCandidates(FinanceOfficerRuleAggregateRoot signerRule,
-			List<FinanceOfficerRuleId> secondSignerCandidateIds) {
+	private List<FinanceOfficerRuleId> refineSecondSignerCandidateRuleIds(FinanceOfficerRuleAggregateRoot signerRule,
+			List<FinanceOfficerRuleId> secondSignerCandidateًRuleIds) {
 
-		List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds = new ArrayList<>();
+		List<FinanceOfficerRuleId> refinedSecondSignerCandidateRuleIds = new ArrayList<>();
 
-		for (FinanceOfficerRuleId secondSignerCandidateId : secondSignerCandidateIds) {
-			FinanceOfficerRuleAggregateRoot secondSignerCandidate = financeOfficerRuleAggregateRepository
-					.findById(secondSignerCandidateId);
+		for (FinanceOfficerRuleId secondSignerCandidateRuleId : secondSignerCandidateًRuleIds) {
+			FinanceOfficerRuleAggregateRoot secondSignerCandidateRule = financeOfficerRuleAggregateRepository
+					.findById(secondSignerCandidateRuleId);
 
-			if (secondSignerCandidate.getRank() >= signerRule.getRank() && !secondSignerCandidate.equals(signerRule)) {
-				refinedSecondSignerCandidateIds.add(secondSignerCandidateId);
+			if (secondSignerCandidateRule.getRank() >= signerRule.getRank()
+					&& !secondSignerCandidateRule.equals(signerRule)) {
+				refinedSecondSignerCandidateRuleIds.add(secondSignerCandidateRuleId);
 			}
 		}
-		return refinedSecondSignerCandidateIds;
+		return refinedSecondSignerCandidateRuleIds;
 	}
 }

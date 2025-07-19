@@ -17,7 +17,6 @@ import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
 import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 import com.pirshayan.domain.repository.FinanceOfficerRuleAggregateRepository;
-import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -50,8 +49,8 @@ class AchTransferOrderDomainServiceTest {
 		assertTrue(signedAchTransferOrder.getFirstSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getFirstSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getFirstSignerRuleId().get(), signerRuleId);
-		assertTrue(signedAchTransferOrder.getFirstSignerCandidateIds().isEmpty());
-		assertEquals(signedAchTransferOrder.getSecondSignerCandidateIds(), refinedSecondSignerCandidatesIds);
+		assertTrue(signedAchTransferOrder.getFirstSignerCandidateRuleIds().isEmpty());
+		assertEquals(signedAchTransferOrder.getSecondSignerCandidateRuleIds(), refinedSecondSignerCandidatesIds);
 	}
 
 	@Test
@@ -85,7 +84,7 @@ class AchTransferOrderDomainServiceTest {
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get(), signerRule.getFinanceOfficerRuleId());
-		assertTrue(signedAchTransferOrder.getSecondSignerCandidateIds().isEmpty());
+		assertTrue(signedAchTransferOrder.getSecondSignerCandidateRuleIds().isEmpty());
 	}
 
 	@Test
@@ -116,17 +115,4 @@ class AchTransferOrderDomainServiceTest {
 				() -> sut.sign(signerRule, pendingSecondAchTransferOrder));
 	}
 
-	@Test
-	void sign_ach_transfer_order_with_status_pending_second_signature_by_a_lower_rank_signer_than_the_first_one__should_throw_SecondSignersRankLowerThanFirstSignersRankException() {
-		// Arrange
-		String orderId = "025071200001";
-		AchTransferOrderAggregateRoot pendingSecondAchTransferOrder = AchTransferOrderAggregateTestHelper
-				.buildPendingSecondSignatureAchTransferOrder(orderId);
-		FinanceOfficerRuleId signerId = new FinanceOfficerRuleId(1113226189L);
-		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerId);
-
-		// Act & Assert
-		assertThrows(SecondSignersRankLowerThanFirstSignersRankException.class,
-				() -> sut.sign(signerRule, pendingSecondAchTransferOrder));
-	}
 }

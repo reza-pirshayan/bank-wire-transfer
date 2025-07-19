@@ -11,7 +11,6 @@ import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNot
 import com.pirshayan.domain.repository.exception.AchTransferOrderNotFoundException;
 import com.pirshayan.domain.repository.exception.FinanceOfficerRuleNotFoundException;
 import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
-import com.pirshayan.domain.service.exception.SecondSignersRankLowerThanFirstSignersRankException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -31,8 +30,6 @@ public class SignAchTransferOrderCommandHandler {
 			presenter.presentFinanceOfficerRuleIsNotSignCandidateException(e);
 		} catch (AchTransferOrderSigner1AndSigner2CannotBeTheSameException e) {
 			presenter.presentAchTransferOrderSigner1AndSigner2CannotBeTheSameException(e);
-		} catch (SecondSignersRankLowerThanFirstSignersRankException e) {
-			presenter.presentSecondSignersRankLowerThanFirstSignersRankException(e);
 		} catch (FinanceOfficerNotPrivilegedToSignAsFirstSignerException e) {
 			presenter.presentFinanceOfficerNotPrivilegedToSignAsFirstSignerException(e);
 		} catch (FinanceOfficerNotPrivilegedToSignAsSecondSignerException e) {

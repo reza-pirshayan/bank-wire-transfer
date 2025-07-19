@@ -8,9 +8,9 @@ import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNot
 
 public class FinanceOfficerRuleAggregateRoot {
 	private final FinanceOfficerRuleId financeOfficerRuleId;
-	private final Boolean isAllowedToSignAsFirst;
-	private final Boolean isAllowedToSignAsSecond;
-	private final Boolean isAllowedToSend;
+	private final boolean isAllowedToSignAsFirst;
+	private final boolean isAllowedToSignAsSecond;
+	private final boolean isAllowedToSend;
 	private final Long maxFirstSignAmount;
 	private final Long maxSecondSignAmount;
 	private final Long maxSendAmount;
