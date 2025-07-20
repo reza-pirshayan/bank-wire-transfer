@@ -139,10 +139,10 @@ Represents a wire transfer order. Key fields include:
 - `achTransferOrderId`: unique ID  
 - `receivedDateTime`: timestamp  
 - `status`: current status (e.g., waiting for signature)  
-- `firstSignerRuleCandidateIds`: list of candidate IDs  
-- `secondSignerRuleCandidateIds`: list of second signature candidates  
-- `firstSignature` / `secondSignature`: Optional signature info  
-- `cancelDateTime`: optional cancel timestamp  
+- `firstSignerRuleCandidateIds`: list of first signer candidate IDs  
+- `secondSignerRuleCandidateIds`: list of second signer candidate IDs
+- `firstSignature` / `secondSignature`: signature info  
+- `cancelDateTime`: cancel timestamp  
 
 **Behavioral Methods**:
 
@@ -223,9 +223,9 @@ Represents a finance officer's signing permissions:
 
 **Test philosophy based on Unit Testing by Vladimir Khorikov**:
 
-- Resilient to refactoring
-- Fail when behavior is incorrect
-- Fast execution
+- Resistence to refactoring
+- Protection against regression
+- Fast feedback
 - Maintainable
 
 **Tests are organized by layer**:
