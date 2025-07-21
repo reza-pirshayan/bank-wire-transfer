@@ -3,14 +3,9 @@ package com.pirshayan.domain.model.achtransferorder;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.jmolecules.ddd.annotation.Entity;
-import org.jmolecules.ddd.annotation.Identity;
-
 import com.pirshayan.domain.model.Validator;
 
-@Entity
 class Transfer {
-	@Identity
 	private final String id;
 	private final Long amount;
 	private final LocalDate dateOfIssue;

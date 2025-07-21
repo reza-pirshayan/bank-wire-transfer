@@ -2,8 +2,8 @@ package com.pirshayan.domain.model.achtransferorder;
 
 import java.util.Objects;
 
-import com.pirshayan.domain.exception.InvalidDomainObjectException;
 import com.pirshayan.domain.model.Validator;
+import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 
 class DestinationBankAccount {
 	private final String iban;

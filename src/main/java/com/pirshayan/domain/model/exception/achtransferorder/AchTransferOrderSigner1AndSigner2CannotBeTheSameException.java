@@ -1,7 +1,7 @@
-package com.pirshayan.domain.model.achtransferorder.exception;
+package com.pirshayan.domain.model.exception.achtransferorder;
 
-import com.pirshayan.domain.exception.GeneralException;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
+import com.pirshayan.domain.model.exception.GeneralException;
 
 public class AchTransferOrderSigner1AndSigner2CannotBeTheSameException extends GeneralException {
 	private static final long serialVersionUID = 1L;

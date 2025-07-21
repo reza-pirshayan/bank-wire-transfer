@@ -2,11 +2,8 @@ package com.pirshayan.domain.model.achtransferorder;
 
 import java.util.Objects;
 
-import org.jmolecules.ddd.annotation.ValueObject;
-
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
-@ValueObject
 class SignatureInfo {
 	private final Long dateTime;
 	private final FinanceOfficerRuleId signerRuleId;

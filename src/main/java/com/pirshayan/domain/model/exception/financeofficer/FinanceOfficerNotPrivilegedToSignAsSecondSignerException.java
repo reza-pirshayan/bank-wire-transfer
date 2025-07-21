@@ -1,6 +1,6 @@
-package com.pirshayan.domain.model.financeofficerrule.exception;
+package com.pirshayan.domain.model.exception.financeofficer;
 
-import com.pirshayan.domain.exception.GeneralException;
+import com.pirshayan.domain.model.exception.GeneralException;
 
 public class FinanceOfficerNotPrivilegedToSignAsSecondSignerException extends GeneralException {
 	private static final long serialVersionUID = 1L;

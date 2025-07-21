@@ -1,32 +1,11 @@
 package com.pirshayan.domain.model.financeofficerrule;
 
-import java.util.Objects;
+import com.pirshayan.domain.model.AggregateId;
 
-public class FinanceOfficerRuleId {
-	private final Long id;
+public class FinanceOfficerRuleId extends AggregateId<Long> {
 
 	public FinanceOfficerRuleId(Long id) {
-		this.id = id;
+		super(id);
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		FinanceOfficerRuleId other = (FinanceOfficerRuleId) obj;
-		return Objects.equals(id, other.id);
-	}
 }

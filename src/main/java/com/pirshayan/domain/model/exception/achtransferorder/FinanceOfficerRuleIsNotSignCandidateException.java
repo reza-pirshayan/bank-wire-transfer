@@ -1,7 +1,7 @@
-package com.pirshayan.domain.model.achtransferorder.exception;
+package com.pirshayan.domain.model.exception.achtransferorder;
 
-import com.pirshayan.domain.exception.GeneralException;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
+import com.pirshayan.domain.model.exception.GeneralException;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
 public class FinanceOfficerRuleIsNotSignCandidateException extends GeneralException {

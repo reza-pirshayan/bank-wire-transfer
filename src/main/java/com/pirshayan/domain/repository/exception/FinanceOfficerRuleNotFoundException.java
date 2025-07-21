@@ -1,6 +1,6 @@
 package com.pirshayan.domain.repository.exception;
 
-import com.pirshayan.domain.exception.GeneralException;
+import com.pirshayan.domain.model.exception.GeneralException;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
 public class FinanceOfficerRuleNotFoundException extends GeneralException {

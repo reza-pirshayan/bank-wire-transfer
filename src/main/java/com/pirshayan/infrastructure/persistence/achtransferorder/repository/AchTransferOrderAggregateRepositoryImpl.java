@@ -19,7 +19,6 @@ import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.PendingS
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrderAggregateRepository {
@@ -88,7 +87,6 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 		}
 	}
 
-	@Transactional
 	@Override
 	public void create(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
 
@@ -120,7 +118,6 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 	}
 
-	@Transactional
 	@Override
 	public void update(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
 		AchTransferOrderId achTransferOrderId = achTransferOrderAggregateRoot.getAchTransferOrderId();
@@ -167,7 +164,6 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 	}
 
 	@Override
-	@Transactional
 	public void deleteById(AchTransferOrderId achTransferOrderId) {
 		if (achTransferOrderId == null) {
 			throw new IllegalArgumentException(

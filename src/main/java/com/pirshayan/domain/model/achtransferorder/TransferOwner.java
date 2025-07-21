@@ -2,15 +2,10 @@ package com.pirshayan.domain.model.achtransferorder;
 
 import java.util.Objects;
 
-import org.jmolecules.ddd.annotation.Entity;
-import org.jmolecules.ddd.annotation.Identity;
-
-import com.pirshayan.domain.exception.InvalidDomainObjectException;
 import com.pirshayan.domain.model.Validator;
+import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 
-@Entity
 class TransferOwner {
-	@Identity
 	private final String id;
 	private final String name;
 

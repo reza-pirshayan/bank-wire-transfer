@@ -1,4 +1,4 @@
-package com.pirshayan.domain.exception;
+package com.pirshayan.domain.model.exception;
 
 public abstract class GeneralException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

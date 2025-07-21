@@ -11,6 +11,7 @@ import com.pirshayan.domain.repository.FinanceOfficerRuleAggregateRepository;
 import com.pirshayan.domain.service.AchTransferOrderDomainService;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class AchTransferOrderApplicationService {
@@ -28,6 +29,7 @@ public class AchTransferOrderApplicationService {
 		this.achTransferOrderDomainService = achTransferOrderDomainService;
 	}
 
+	@Transactional
 	public void sign(SignAchTransferOrderCommand command) {
 		// Create a value object for the signer's rule ID based on the command input
 		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(command.getSignerRuleId());
