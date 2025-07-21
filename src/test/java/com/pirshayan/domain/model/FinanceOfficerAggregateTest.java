@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
+import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleAggregateRoot;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
-import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
-import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 
 class FinanceOfficerAggregateTest {
 	@Test

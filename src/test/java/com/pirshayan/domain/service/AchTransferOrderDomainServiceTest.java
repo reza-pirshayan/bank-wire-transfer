@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import com.pirshayan.AchTransferOrderAggregateTestHelper;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
-import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
+import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
+import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
+import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleAggregateRoot;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
-import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
-import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 import com.pirshayan.domain.repository.FinanceOfficerRuleAggregateRepository;
 
 import io.quarkus.test.junit.QuarkusTest;
