@@ -3,6 +3,7 @@ package com.pirshayan.controller.grpc.signachtransferorder;
 import com.pirshayan.SignAchTransferOrderResponse;
 import com.pirshayan.application.presenter.SignAchTransferOrderPresenter;
 import com.pirshayan.domain.model.exception.GeneralException;
+import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
 import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleIsNotSignCandidateException;
 import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
@@ -78,6 +79,12 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	}
 
 	@Override
+	public void presentInvalidDomainObjectException(InvalidDomainObjectException e) {
+		response = Uni.createFrom().failure(handleException(Status.INVALID_ARGUMENT, e.getMessage(), e.getCode()));
+
+	}
+
+	@Override
 	public void presentGeneralException(GeneralException e) {
 		response = Uni.createFrom().failure(handleException(Status.INTERNAL, e.getMessage(), e.getCode()));
 
@@ -102,4 +109,5 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 
 		return status.asRuntimeException(metadata);
 	}
+
 }

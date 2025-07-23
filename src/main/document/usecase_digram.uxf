@@ -2,18 +2,6 @@
 <diagram program="umlet" version="15.1">
   <zoom_level>10</zoom_level>
   <element>
-    <id>UMLActor</id>
-    <coordinates>
-      <x>140</x>
-      <y>240</y>
-      <w>300</w>
-      <h>120</h>
-    </coordinates>
-    <panel_attributes>Client
-(Finance Users, Insurance Systems, ...)</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>UMLGeneric</id>
     <coordinates>
       <x>550</x>
@@ -28,8 +16,8 @@ halign=left</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>610</x>
-      <y>250</y>
+      <x>620</x>
+      <y>570</y>
       <w>220</w>
       <h>60</h>
     </coordinates>
@@ -37,44 +25,10 @@ halign=left</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>310</x>
-      <y>270</y>
-      <w>320</w>
-      <h>30</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;300.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLUseCase</id>
     <coordinates>
       <x>620</x>
-      <y>550</y>
-      <w>220</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>Cancel Ach transfer
-bg=red</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>310</x>
-      <y>270</y>
-      <w>320</w>
-      <h>130</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;300.0;110.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLUseCase</id>
-    <coordinates>
-      <x>620</x>
-      <y>450</y>
+      <y>350</y>
       <w>220</w>
       <h>60</h>
     </coordinates>
@@ -85,36 +39,14 @@ to Bank</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>610</x>
-      <y>350</y>
+      <x>620</x>
+      <y>240</y>
       <w>220</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>Sign Ach transfer order
 bg=green</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>310</x>
-      <y>270</y>
-      <w>330</w>
-      <h>330</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;310.0;310.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>310</x>
-      <y>270</y>
-      <w>330</w>
-      <h>230</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;310.0;210.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
@@ -127,7 +59,84 @@ bg=green</panel_attributes>
     <panel_attributes>Note..
 Several use cases can be considered for this system.
 The use case marked in green has been implemented as a sample. 
-You may implement the use case marked in red as a practice exercise.</panel_attributes>
+You may implement any othe use case as a practice exercise.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLActor</id>
+    <coordinates>
+      <x>270</x>
+      <y>270</y>
+      <w>120</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>Finance Officer</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>260</y>
+      <w>290</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>270.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>300</y>
+      <w>290</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>270.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLActor</id>
+    <coordinates>
+      <x>270</x>
+      <y>490</y>
+      <w>120</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>Finance Officer</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>520</y>
+      <w>290</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>270.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>480</y>
+      <w>290</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>270.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>620</x>
+      <y>460</y>
+      <w>220</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Cancel Ach transfer order</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

@@ -2,6 +2,7 @@ package com.pirshayan.controller.rest.signachtransferorder;
 
 import com.pirshayan.application.presenter.SignAchTransferOrderPresenter;
 import com.pirshayan.domain.model.exception.GeneralException;
+import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
 import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleIsNotSignCandidateException;
 import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
@@ -28,14 +29,15 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	@Override
 	public void presentSuccess() {
 
-		response = Response.status(Response.Status.OK).entity(new ResponseDto(0, "successful")).build();
+		response = Response.status(Response.Status.OK).entity(new ResponseDto(String.valueOf(0), "successful")).build();
 
 	}
 
 	@Override
 	public void presentFinanceOfficerRuleIsNotSignCandidateException(FinanceOfficerRuleIsNotSignCandidateException e) {
 
-		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(1, e.getMessage())).build();
+		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(e.getCode(), e.getMessage()))
+				.build();
 
 	}
 
@@ -43,7 +45,8 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	public void presentAchTransferOrderSigner1AndSigner2CannotBeTheSameException(
 			AchTransferOrderSigner1AndSigner2CannotBeTheSameException e) {
 
-		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(3, e.getMessage())).build();
+		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(e.getCode(), e.getMessage()))
+				.build();
 
 	}
 
@@ -51,7 +54,8 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	public void presentFinanceOfficerNotPrivilegedToSignAsFirstSignerException(
 			FinanceOfficerNotPrivilegedToSignAsFirstSignerException e) {
 
-		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(5, e.getMessage())).build();
+		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(e.getCode(), e.getMessage()))
+				.build();
 
 	}
 
@@ -59,28 +63,38 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	public void presentFinanceOfficerNotPrivilegedToSignAsSecondSignerException(
 			FinanceOfficerNotPrivilegedToSignAsSecondSignerException e) {
 
-		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(6, e.getMessage())).build();
+		response = Response.status(Response.Status.UNAUTHORIZED).entity(new ResponseDto(e.getCode(), e.getMessage()))
+				.build();
 
 	}
 
 	@Override
 	public void presentAchTransferOrderNotFoundException(AchTransferOrderNotFoundException e) {
 
-		response = Response.status(Response.Status.NOT_FOUND).entity(new ResponseDto(7, e.getMessage())).build();
+		response = Response.status(Response.Status.NOT_FOUND).entity(new ResponseDto(e.getCode(), e.getMessage()))
+				.build();
 
 	}
 
 	@Override
 	public void presentFinanceOfficerRuleNotFoundException(FinanceOfficerRuleNotFoundException e) {
 
-		response = Response.status(Response.Status.NOT_FOUND).entity(new ResponseDto(8, e.getMessage())).build();
+		response = Response.status(Response.Status.NOT_FOUND).entity(new ResponseDto(e.getCode(), e.getMessage()))
+				.build();
 
 	}
 
 	@Override
 	public void presentInconsistentAchTransferOrderException(InconsistentAchTransferOrderException e) {
 
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ResponseDto(9, e.getMessage()))
+		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.entity(new ResponseDto(e.getCode(), e.getMessage())).build();
+
+	}
+
+	@Override
+	public void presentInvalidDomainObjectException(InvalidDomainObjectException e) {
+		response = Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDto(e.getCode(), e.getMessage()))
 				.build();
 
 	}
@@ -88,15 +102,15 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	@Override
 	public void presentGeneralException(GeneralException e) {
 
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ResponseDto(9, e.getMessage()))
-				.build();
+		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.entity(new ResponseDto(e.getCode(), e.getMessage())).build();
 
 	}
 
 	@Override
 	public void presentRuntimeException(RuntimeException e) {
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ResponseDto(-1, e.getMessage()))
-				.build();
+		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.entity(new ResponseDto(String.valueOf(-1), e.getMessage())).build();
 
 	}
 

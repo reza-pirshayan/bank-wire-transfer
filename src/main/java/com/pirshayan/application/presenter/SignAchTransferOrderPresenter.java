@@ -1,6 +1,7 @@
 package com.pirshayan.application.presenter;
 
 import com.pirshayan.domain.model.exception.GeneralException;
+import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
 import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleIsNotSignCandidateException;
 import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
@@ -28,6 +29,8 @@ public interface SignAchTransferOrderPresenter {
 	public void presentFinanceOfficerRuleNotFoundException(FinanceOfficerRuleNotFoundException e);
 
 	public void presentInconsistentAchTransferOrderException(InconsistentAchTransferOrderException e);
+	
+	public void presentInvalidDomainObjectException(InvalidDomainObjectException e);
 
 	public void presentGeneralException(GeneralException e);
 

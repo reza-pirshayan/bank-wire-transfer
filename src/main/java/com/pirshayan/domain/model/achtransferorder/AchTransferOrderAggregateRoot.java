@@ -10,29 +10,50 @@ import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleI
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
 /**
- * Aggregate Root representing a single ACH (Automated Clearing House) transfer order.
+ * Aggregate Root for managing ACH (Automated Clearing House) transfer orders.
  *
- * This class encapsulates the full lifecycle and business logic of a bank wire transfer,
- * including metadata, account and ownership info, signature control, and lifecycle state.
+ * This class models all relevant data and behaviors related to a transfer order,
+ * including its current status, eligible signers, and signature states.
  *
- * It ensures:
- * - Immutability via builder-based creation and transformation
- * - Rule enforcement: valid signer candidates, correct signature order, dual approval
+ * Business rules:
+ * - First and second signers must be from predefined candidate lists.
+ * - A signer cannot sign both as first and second.
+ * - State transitions must happen through controlled methods.
+ *
+ * This class is immutable. All changes are made by creating a new instance via the Builder.
  */
 public class AchTransferOrderAggregateRoot {
 
-	// === Aggregate Fields ===
-
+	// Unique identifier of this ACH transfer order
 	private final AchTransferOrderId achTransferOrderId;
+
+	// Timestamp when the transfer order was received
 	private final Long receivedDateTime;
+
+	// Transfer value object containing the details of the actual transaction
 	private final Transfer transfer;
+
+	// Current lifecycle status of the ACH order
 	private final AchTransferOrderStatus status;
+
+	// Candidates eligible to sign as the first signer
 	private final List<FinanceOfficerRuleId> firstSignerCandidateRuleIds;
+
+	// Candidates eligible to sign as the second signer
 	private final List<FinanceOfficerRuleId> secondSignerCandidateRuleIds;
+
+	// Optional info of the first signature, if signed
 	private final Optional<SignatureInfo> firstSignature;
+
+	// Optional info of the second signature, if signed
 	private final Optional<SignatureInfo> secondSignature;
+
+	// Optional cancelation time, if the order was cancelled
 	private final Optional<Long> cancelDateTime;
 
+	/**
+	 * Private constructor called only from the Builder.
+	 */
 	private AchTransferOrderAggregateRoot(Builder builder) {
 		this.achTransferOrderId = builder.achTransferOrderId;
 		this.receivedDateTime = builder.receivedDateTime;
@@ -45,17 +66,27 @@ public class AchTransferOrderAggregateRoot {
 		this.cancelDateTime = Optional.ofNullable(builder.cancelDateTime);
 	}
 
-	// === Getters (read-only projection) ===
+	// ------------- Getters (Accessors for domain info) -------------
 
-	public AchTransferOrderId getAchTransferOrderId() { return achTransferOrderId; }
+	public AchTransferOrderId getAchTransferOrderId() {
+		return achTransferOrderId;
+	}
 
-	public Long getReceivedDateTime() { return receivedDateTime; }
+	public Long getReceivedDateTime() {
+		return receivedDateTime;
+	}
 
-	public String getTransferId() { return transfer.getId(); }
+	public String getTransferId() {
+		return transfer.getId();
+	}
 
-	public Long getTransferAmount() { return transfer.getAmount(); }
+	public Long getTransferAmount() {
+		return transfer.getAmount();
+	}
 
-	public LocalDate getTransferDateOfIssue() { return transfer.getDateOfIssue(); }
+	public LocalDate getTransferDateOfIssue() {
+		return transfer.getDateOfIssue();
+	}
 
 	public String getTransferDestinationBankAccountIban() {
 		return transfer.getDestinationBankAccount().getIban();
@@ -81,27 +112,49 @@ public class AchTransferOrderAggregateRoot {
 		return transfer.getDestinationBankAccount().getOwner().getMobileNumber();
 	}
 
-	public String getTransferOwnerId() { return transfer.getDestinationBankAccount().getOwner().getId(); }
+	public String getTransferOwnerId() {
+		return transfer.getDestinationBankAccount().getOwner().getId();
+	}
 
-	public String getTransferOwnerName() { return transfer.getDestinationBankAccount().getOwner().getName(); }
+	public String getTransferOwnerName() {
+		return transfer.getDestinationBankAccount().getOwner().getName();
+	}
 
-	public Integer getTransferChecksum() { return transfer.getChecksum(); }
+	public Integer getTransferChecksum() {
+		return transfer.getChecksum();
+	}
 
-	public Optional<String> getTransferDescription() { return transfer.getDescription(); }
+	public Optional<String> getTransferDescription() {
+		return transfer.getDescription();
+	}
 
-	public Optional<String> getTransferPayId() { return transfer.getPayId(); }
+	public Optional<String> getTransferPayId() {
+		return transfer.getPayId();
+	}
 
-	public boolean isCancelled() { return status == AchTransferOrderStatus.CANCELLED; }
+	public boolean isCancelled() {
+		return status == AchTransferOrderStatus.CANCELLED;
+	}
 
-	public boolean isPendingFirstSignature() { return status == AchTransferOrderStatus.PENDING_FIRST_SIGNATURE; }
+	public boolean isPendingFirstSignature() {
+		return status == AchTransferOrderStatus.PENDING_FIRST_SIGNATURE;
+	}
 
-	public boolean isPendingSecondSignature() { return status == AchTransferOrderStatus.PENDING_SECOND_SIGNATURE; }
+	public boolean isPendingSecondSignature() {
+		return status == AchTransferOrderStatus.PENDING_SECOND_SIGNATURE;
+	}
 
-	public boolean isPendingSend() { return status == AchTransferOrderStatus.PENDING_SEND; }
+	public boolean isPendingSend() {
+		return status == AchTransferOrderStatus.PENDING_SEND;
+	}
 
-	public List<FinanceOfficerRuleId> getFirstSignerCandidateRuleIds() { return firstSignerCandidateRuleIds; }
+	public List<FinanceOfficerRuleId> getFirstSignerCandidateRuleIds() {
+		return firstSignerCandidateRuleIds;
+	}
 
-	public List<FinanceOfficerRuleId> getSecondSignerCandidateRuleIds() { return secondSignerCandidateRuleIds; }
+	public List<FinanceOfficerRuleId> getSecondSignerCandidateRuleIds() {
+		return secondSignerCandidateRuleIds;
+	}
 
 	public Optional<Long> getFirstSignatureDateTime() {
 		return firstSignature.map(SignatureInfo::getDateTime);
@@ -119,58 +172,45 @@ public class AchTransferOrderAggregateRoot {
 		return secondSignature.map(SignatureInfo::getSignerRuleId);
 	}
 
-	public Optional<Long> getCancelDateTime() { return cancelDateTime; }
+	public Optional<Long> getCancelDateTime() {
+		return cancelDateTime;
+	}
 
-	public String getStatusString() { return status.name(); }
+	public String getStatusString() {
+		return status.name();
+	}
 
 	public String getTransferDestinationBankAccountOwnerPersonTypeString() {
 		return transfer.getDestinationBankAccount().getOwner().getPersonType().name();
 	}
 
 	/**
-	 * Validates that a signer is within the allowed candidate list.
-	 * 
-	 * @throws FinanceOfficerRuleIsNotSignCandidateException if rule ID not found in list
-	 */
-	private void ensureSignerRuleIdIsInCandidateList(FinanceOfficerRuleId signerRuleId,
-													 List<FinanceOfficerRuleId> candidateSignerList) {
-		boolean isCandidate = candidateSignerList.stream().anyMatch(candidateId -> candidateId.equals(signerRuleId));
-		if (!isCandidate)
-			throw new FinanceOfficerRuleIsNotSignCandidateException(this, signerRuleId);
-	}
-
-	/**
-	 * Signs the ACH order as the first signer.
-	 * Advances state to pending second signature.
+	 * Domain behavior: Sign this transfer order as the first signer.
 	 */
 	public AchTransferOrderAggregateRoot signAsFirst(FinanceOfficerRuleId signerRuleId, Long signDateTime,
 			List<FinanceOfficerRuleId> refinedSecondSignerCandidateIds) {
 
 		if (!isPendingFirstSignature()) {
-			throw new IllegalStateException(String.format(
-					"ACH transfer order with ID [ %s ] and status [ %s ] cannot be signed as first.",
-					getAchTransferOrderId().getId(), status));
+			throw new IllegalStateException(
+					String.format("ACH transfer order with ID [ %s ] and status [ %s ] cannot be signed as first.",
+							getAchTransferOrderId().getId(), status));
 		}
 
 		ensureSignerRuleIdIsInCandidateList(signerRuleId, firstSignerCandidateRuleIds);
 
-		return cloneBuilder()
-				.setPendingSecondSignature()
-				.setFirstSignature(signerRuleId, signDateTime)
+		return cloneBuilder().setPendingSecondSignature().setFirstSignature(signerRuleId, signDateTime)
 				.setFirstSignerCandidateIds(new ArrayList<>())
-				.setSecondSignerCandidateIds(refinedSecondSignerCandidateIds)
-				.build();
+				.setSecondSignerCandidateIds(refinedSecondSignerCandidateIds).build();
 	}
 
 	/**
-	 * Signs the ACH order as the second signer.
-	 * Finalizes the order and prepares for dispatch.
+	 * Domain behavior: Sign this transfer order as the second signer.
 	 */
 	public AchTransferOrderAggregateRoot signAsSecond(final FinanceOfficerRuleId signerRuleId, Long signDateTime) {
 		if (!isPendingSecondSignature()) {
-			throw new IllegalStateException(String.format(
-					"ACH transfer order with ID [ %s ] and status [ %s ] cannot be signed as second.",
-					getAchTransferOrderId().getId(), status));
+			throw new IllegalStateException(
+					String.format("ACH transfer order with ID [ %s ] and status [ %s ] cannot be signed as second.",
+							getAchTransferOrderId().getId(), status));
 		}
 
 		if (getFirstSignatureDateTime().isEmpty() || getFirstSignerRuleId().isEmpty()) {
@@ -179,25 +219,33 @@ public class AchTransferOrderAggregateRoot {
 					getAchTransferOrderId().getId(), getStatusString()));
 		}
 
-		// Ensure dual authorization: signer1 ≠ signer2
 		if (firstSignature.get().getSignerRuleId().equals(signerRuleId)) {
 			throw new AchTransferOrderSigner1AndSigner2CannotBeTheSameException(this);
 		}
 
 		ensureSignerRuleIdIsInCandidateList(signerRuleId, secondSignerCandidateRuleIds);
 
-		return cloneBuilder()
-				.setPendingSend()
-				.setSecondSignature(signerRuleId, signDateTime)
-				.setSecondSignerCandidateIds(new ArrayList<>())
-				.build();
+		return cloneBuilder().setPendingSend().setSecondSignature(signerRuleId, signDateTime)
+				.setSecondSignerCandidateIds(new ArrayList<>()).build();
+	}
+
+	// ----- Internal Helper Methods -----
+
+	/**
+	 * Ensures the signer is part of the provided candidate signer list.
+	 */
+	private void ensureSignerRuleIdIsInCandidateList(FinanceOfficerRuleId signerRuleId,
+			List<FinanceOfficerRuleId> candidateSignerList) {
+		boolean isCandidate = candidateSignerList.stream().anyMatch(candidateId -> candidateId.equals(signerRuleId));
+		if (!isCandidate)
+			throw new FinanceOfficerRuleIsNotSignCandidateException(this, signerRuleId);
 	}
 
 	/**
-	 * Clones the aggregate into a builder for state mutation and safe rebinding.
+	 * Clones the current aggregate state to a builder for further modification.
 	 */
 	private Builder cloneBuilder() {
-		Builder builder = new Builder(
+		AchTransferOrderAggregateRoot.Builder builder = new AchTransferOrderAggregateRoot.Builder(
 				this.achTransferOrderId, this.receivedDateTime, this.transfer.getId(), this.transfer.getAmount(),
 				this.transfer.getDateOfIssue(), this.transfer.getDestinationBankAccount().getIban(),
 				this.transfer.getDestinationBankAccount().getOwner().getId(),
@@ -231,9 +279,10 @@ public class AchTransferOrderAggregateRoot {
 		return builder;
 	}
 
+	// ------------- Builder for Constructing New Aggregate Instances -------------
+
 	/**
-	 * Builder for {@link AchTransferOrderAggregateRoot}.
-	 * Enforces valid construction of the immutable aggregate and its inner structures.
+	 * Builder class for creating immutable AchTransferOrderAggregateRoot instances.
 	 */
 	public static class Builder {
 		private final AchTransferOrderId achTransferOrderId;
@@ -247,13 +296,11 @@ public class AchTransferOrderAggregateRoot {
 		private final String transferOwnerId;
 		private final String transferOwnerName;
 		private final Integer transferChecksum;
-
 		private PersonType transferDestinationBankAccountOwnerPersonType;
 		private String transferDestinationBankAccountOwnerMobileNumber;
 		private String transferDescription;
 		private String transferPayId;
 		private AchTransferOrderStatus status;
-
 		private List<FinanceOfficerRuleId> firstSignerCandidateRuleIds;
 		private List<FinanceOfficerRuleId> secondSignerCandidateRuleIds;
 		private Long firstSignatureDateTime;
@@ -261,7 +308,6 @@ public class AchTransferOrderAggregateRoot {
 		private Long secondSignatureDateTime;
 		private FinanceOfficerRuleId secondSignerRuleId;
 		private Long cancelDateTime;
-
 		private Transfer transfer;
 		private SignatureInfo firstSignature;
 		private SignatureInfo secondSignature;
@@ -297,8 +343,8 @@ public class AchTransferOrderAggregateRoot {
 			return this;
 		}
 
-		public Builder setTransferDestinationBankAccountOwnerMobileNumber(String mobile) {
-			this.transferDestinationBankAccountOwnerMobileNumber = mobile;
+		public Builder setTransferDestinationBankAccountOwnerMobileNumber(String mobileNumber) {
+			this.transferDestinationBankAccountOwnerMobileNumber = mobileNumber;
 			return this;
 		}
 
@@ -359,30 +405,33 @@ public class AchTransferOrderAggregateRoot {
 			return this;
 		}
 
+		/**
+		 * Finalizes and creates the aggregate root instance.
+		 */
 		public AchTransferOrderAggregateRoot build() {
 			BankAccountOwner.Builder ownerBuilder = new BankAccountOwner.Builder(
 					transferDestinationBankAccountOwnerId, transferDestinationBankAccountOwnerName,
 					transferDestinationBankAccountOwnerPersonType);
-			if (transferDestinationBankAccountOwnerMobileNumber != null)
+			if (transferDestinationBankAccountOwnerMobileNumber != null) {
 				ownerBuilder.setMobileNumber(transferDestinationBankAccountOwnerMobileNumber);
+			}
 
-			DestinationBankAccount destination = new DestinationBankAccount(
+			DestinationBankAccount destinationAccount = new DestinationBankAccount(
 					transferDestinationBankAccountIban, ownerBuilder.build());
 
 			TransferOwner transferOwner = new TransferOwner(transferOwnerId, transferOwnerName);
 
-			Transfer.Builder transferBuilder = new Transfer.Builder(transferId, transferAmount,
-					transferDateOfIssue, destination, transferOwner, transferChecksum);
+			Transfer.Builder transferBuilder = new Transfer.Builder(transferId, transferAmount, transferDateOfIssue,
+					destinationAccount, transferOwner, transferChecksum);
+			if (transferDescription != null) transferBuilder.setDescription(transferDescription);
+			if (transferPayId != null) transferBuilder.setPayId(transferPayId);
 
-			if (transferDescription != null)
-				transferBuilder.setDescription(transferDescription);
-			if (transferPayId != null)
-				transferBuilder.setPayId(transferPayId);
-
-			if (firstSignatureDateTime != null && firstSignerRuleId != null)
+			if (firstSignatureDateTime != null && firstSignerRuleId != null) {
 				firstSignature = new SignatureInfo(firstSignatureDateTime, firstSignerRuleId);
-			if (secondSignatureDateTime != null && secondSignerRuleId != null)
+			}
+			if (secondSignatureDateTime != null && secondSignerRuleId != null) {
 				secondSignature = new SignatureInfo(secondSignatureDateTime, secondSignerRuleId);
+			}
 
 			this.transfer = transferBuilder.build();
 			return new AchTransferOrderAggregateRoot(this);

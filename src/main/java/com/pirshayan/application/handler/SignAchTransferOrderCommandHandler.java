@@ -4,6 +4,7 @@ import com.pirshayan.application.command.SignAchTransferOrderCommand;
 import com.pirshayan.application.presenter.SignAchTransferOrderPresenter;
 import com.pirshayan.application.service.AchTransferOrderApplicationService;
 import com.pirshayan.domain.model.exception.GeneralException;
+import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
 import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleIsNotSignCandidateException;
 import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
@@ -40,6 +41,8 @@ public class SignAchTransferOrderCommandHandler {
 			presenter.presentFinanceOfficerRuleNotFoundException(e);
 		} catch (InconsistentAchTransferOrderException e) {
 			presenter.presentInconsistentAchTransferOrderException(e);
+		} catch (InvalidDomainObjectException e) {
+			presenter.presentInvalidDomainObjectException(e);
 		} catch (GeneralException e) {
 			presenter.presentGeneralException(e);
 		}catch (RuntimeException e) {

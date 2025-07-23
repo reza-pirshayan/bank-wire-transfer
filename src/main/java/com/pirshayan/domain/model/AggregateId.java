@@ -5,7 +5,7 @@ import java.util.Objects;
 public abstract class AggregateId<T> {
 	private final T id;
 
-	public AggregateId(T id) {
+	protected AggregateId(T id) {
 		if (id == null) {
 			throw new IllegalArgumentException("ID value must not be null");
 		}
