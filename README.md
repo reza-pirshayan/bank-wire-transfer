@@ -62,7 +62,7 @@ Before diving into implementation details, it is recommended to review the Class
 - **Located in**: `domain.service`
 - Encapsulates business logic that spans multiple aggregates.
 - Typically used when hydration from a repository is required.
-- **Mutation is not allowed** here; any write operations are handled through aggregates or application services.
+- **Mutation is not allowed** here; any write operations are handled through application services.
 - Still part of the domain and independent of application or infrastructure layers.
 
 ### Application Layer
