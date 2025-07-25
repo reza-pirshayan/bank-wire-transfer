@@ -62,7 +62,7 @@ Before diving into implementation details, it is recommended to review the Class
 - **Located in**: `domain.service`
 - Encapsulates business logic that spans multiple aggregates.
 - Typically used when hydration from a repository is required.
-- **Mutation is not allowed** here; any write operations are handled through application services.
+- **Persistence of mutations is not allowed** here; any write operations are handled through application services.
 
 ### Application Layer
 
@@ -102,14 +102,14 @@ Before diving into implementation details, it is recommended to review the Class
 **Preconditions**:
 
 - Order status must be `PENDING_FIRST_SIGNATURE`.
-- Signer must be listed in first signature candidates.
+- Signer must be listed in first signer candidates.
 
 **Effects**:
 
 - Status changes to `PENDING_SECOND_SIGNATURE`.
-- First signature candidates cleared.
+- First signer candidates cleared.
 - First signer info and timestamp recorded.
-- Second signature candidates filtered:
+- Second signer candidates filtered:
   - First signer removed.
   - Only candidates with equal or higher position retained.
 
