@@ -144,8 +144,8 @@ public class AchTransferOrderAggregateRoot {
 		return status == AchTransferOrderStatus.PENDING_SECOND_SIGNATURE;
 	}
 
-	public boolean isPendingSend() {
-		return status == AchTransferOrderStatus.PENDING_SEND;
+	public boolean isPendingBankDispatch() {
+		return status == AchTransferOrderStatus.PENDING_BANK_DISPATCH;
 	}
 
 	public List<FinanceOfficerRuleId> getFirstSignerCandidateRuleIds() {
@@ -225,7 +225,7 @@ public class AchTransferOrderAggregateRoot {
 
 		ensureSignerRuleIdIsInCandidateList(signerRuleId, secondSignerCandidateRuleIds);
 
-		return cloneBuilder().setPendingSend().setSecondSignature(signerRuleId, signDateTime)
+		return cloneBuilder().setPendingBankDispatch().setSecondSignature(signerRuleId, signDateTime)
 				.setSecondSignerCandidateIds(new ArrayList<>()).build();
 	}
 
@@ -256,7 +256,7 @@ public class AchTransferOrderAggregateRoot {
 			case CANCELLED -> builder.setCancelled();
 			case PENDING_FIRST_SIGNATURE -> builder.setPendingFirstSignature();
 			case PENDING_SECOND_SIGNATURE -> builder.setPendingSecondSignature();
-			case PENDING_SEND -> builder.setPendingSend();
+			case PENDING_BANK_DISPATCH -> builder.setPendingBankDispatch();
 		}
 
 		if (!firstSignerCandidateRuleIds.isEmpty()) {
@@ -373,8 +373,8 @@ public class AchTransferOrderAggregateRoot {
 			return this;
 		}
 
-		private Builder setPendingSend() {
-			this.status = AchTransferOrderStatus.PENDING_SEND;
+		private Builder setPendingBankDispatch() {
+			this.status = AchTransferOrderStatus.PENDING_BANK_DISPATCH;
 			return this;
 		}
 

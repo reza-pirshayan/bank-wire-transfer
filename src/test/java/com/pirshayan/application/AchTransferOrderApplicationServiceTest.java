@@ -67,7 +67,7 @@ class AchTransferOrderApplicationServiceTest {
 		testHelper.clearPersistenceContext();
 		AchTransferOrderId achTransferOrderAggregateId = new AchTransferOrderId(commandOrderId);
 		AchTransferOrderAggregateRoot signedAchTransferOrder = testHelper.HydrateAchTransferOrder(achTransferOrderAggregateId);
-		assertTrue(signedAchTransferOrder.isPendingSend());
+		assertTrue(signedAchTransferOrder.isPendingBankDispatch());
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get().getId(), commandSecondSignerRuleId);

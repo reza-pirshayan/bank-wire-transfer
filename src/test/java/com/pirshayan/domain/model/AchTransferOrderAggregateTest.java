@@ -88,7 +88,7 @@ class AchTransferOrderAggregateTest {
 		AchTransferOrderAggregateRoot signedAchTransferOrder = sut.signAsSecond(secondSignerRuleId, signDateTime);
 
 		// Assert
-		assertTrue(signedAchTransferOrder.isPendingSend());
+		assertTrue(signedAchTransferOrder.isPendingBankDispatch());
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getSecondSignatureDateTime().get(), signDateTime);

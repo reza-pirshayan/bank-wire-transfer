@@ -86,7 +86,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			return achTransferOrderMapper.toModel(firstSignatureEntity);
 		}
 
-		case PENDING_SEND -> {
+		case PENDING_BANK_DISPATCH -> {
 			SecondSignatureEntity secondSignatureEntity = secondSignatureEntityRepository
 					.findByIdOptional(achTransferOrderId.getId())
 					.orElseThrow(() -> new InconsistentAchTransferOrderException(achTransferOrderId, 2));
@@ -177,8 +177,8 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 		}
 
 		// Case 2: Update the transfer order after the second signature is collected
-		if (achTransferOrderAggregateRoot.isPendingSend()) {
-			achTransferOrderEntity.setStatus(AchTransferOrderPersistenceStatus.PENDING_SEND);
+		if (achTransferOrderAggregateRoot.isPendingBankDispatch()) {
+			achTransferOrderEntity.setStatus(AchTransferOrderPersistenceStatus.PENDING_BANK_DISPATCH);
 
 			// Load the previously saved first signature
 			FirstSignatureEntity firstSignatureEntity = firstSignatureEntityRepository
@@ -242,7 +242,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			return;
 		}
 
-		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_SEND) {
+		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_BANK_DISPATCH) {
 
 			secondSignatureEntityRepository.delete("DELETE FROM SecondSignatureEntity s WHERE s.id = ?1",
 					achTransferOrderId.getId());

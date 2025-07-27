@@ -94,8 +94,8 @@ public class AchTransferOrderMappingHelper {
 			return AchTransferOrderPersistenceStatus.PENDING_FIRST_SIGNATURE;
 		if (root.isPendingSecondSignature())
 			return AchTransferOrderPersistenceStatus.PENDING_SECOND_SIGNATURE;
-		if (root.isPendingSend())
-			return AchTransferOrderPersistenceStatus.PENDING_SEND;
+		if (root.isPendingBankDispatch())
+			return AchTransferOrderPersistenceStatus.PENDING_BANK_DISPATCH;
 		if (root.isCancelled())
 			return AchTransferOrderPersistenceStatus.CANCELLED;
 

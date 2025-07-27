@@ -80,7 +80,7 @@ class AchTransferOrderDomainServiceTest {
 		AchTransferOrderAggregateRoot signedAchTransferOrder = sut.sign(signerRule, pendingSecondAchTransferOrder);
 
 		// Assert
-		assertTrue(signedAchTransferOrder.isPendingSend());
+		assertTrue(signedAchTransferOrder.isPendingBankDispatch());
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
 		assertEquals(signedAchTransferOrder.getSecondSignerRuleId().get(), signerRule.getFinanceOfficerRuleId());

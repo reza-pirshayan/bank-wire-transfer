@@ -32,7 +32,7 @@ public class AchTransferOrderMapperHandler {
 		case PENDING_SECOND_SIGNATURE -> {
 			return pendingSecondSignatureAchTransferOrderMapperImpl;
 		}
-		case PENDING_SEND -> {
+		case PENDING_BANK_DISPATCH -> {
 			return pendingSendAchTransferOrderMapperImpl;
 		}
 		default -> {
@@ -56,7 +56,7 @@ public class AchTransferOrderMapperHandler {
 			return pendingSecondSignatureAchTransferOrderMapperImpl;
 		}
 		
-		if (achTransferOrderAggregateRoot.isPendingSend()) {
+		if (achTransferOrderAggregateRoot.isPendingBankDispatch()) {
 			return pendingSendAchTransferOrderMapperImpl;
 		}
 		
