@@ -90,12 +90,6 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 
 	}
 
-	@Override
-	public void presentRuntimeException(RuntimeException e) {
-		response = Uni.createFrom().failure(handleException(Status.INTERNAL, e.getMessage(), "-1"));
-
-	}
-
 	/**
 	 * Helper method to handle exceptions.
 	 */

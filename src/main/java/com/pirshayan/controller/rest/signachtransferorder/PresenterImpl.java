@@ -107,11 +107,4 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 
 	}
 
-	@Override
-	public void presentRuntimeException(RuntimeException e) {
-		response = Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-				.entity(new ResponseDto(String.valueOf(-1), e.getMessage())).build();
-
-	}
-
 }

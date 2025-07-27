@@ -45,8 +45,6 @@ public class SignAchTransferOrderCommandHandler {
 			presenter.presentInvalidDomainObjectException(e);
 		} catch (GeneralException e) {
 			presenter.presentGeneralException(e);
-		}catch (RuntimeException e) {
-			presenter.presentRuntimeException(e);
 		} 
 	}
 }

@@ -29,10 +29,9 @@ public interface SignAchTransferOrderPresenter {
 	public void presentFinanceOfficerRuleNotFoundException(FinanceOfficerRuleNotFoundException e);
 
 	public void presentInconsistentAchTransferOrderException(InconsistentAchTransferOrderException e);
-	
+
 	public void presentInvalidDomainObjectException(InvalidDomainObjectException e);
 
 	public void presentGeneralException(GeneralException e);
 
-	public void presentRuntimeException(RuntimeException e);
 }
