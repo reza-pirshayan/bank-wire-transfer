@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
-import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleIsNotSignCandidateException;
+import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
+import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSignerIsNotSignCandidateException;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 
 /**
@@ -238,7 +238,7 @@ public class AchTransferOrderAggregateRoot {
 			List<FinanceOfficerRuleId> candidateSignerList) {
 		boolean isCandidate = candidateSignerList.stream().anyMatch(candidateId -> candidateId.equals(signerRuleId));
 		if (!isCandidate)
-			throw new FinanceOfficerRuleIsNotSignCandidateException(this, signerRuleId);
+			throw new AchTransferOrderSignerIsNotSignCandidateException(this, signerRuleId);
 	}
 
 	/**

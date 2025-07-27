@@ -2,12 +2,12 @@ package com.pirshayan.controller.grpc.signachtransferorder;
 
 import com.pirshayan.SignAchTransferOrderResponse;
 import com.pirshayan.application.presenter.SignAchTransferOrderPresenter;
-import com.pirshayan.domain.model.exception.GeneralException;
-import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
-import com.pirshayan.domain.model.exception.achtransferorder.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
-import com.pirshayan.domain.model.exception.achtransferorder.FinanceOfficerRuleIsNotSignCandidateException;
-import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
-import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
+import com.pirshayan.domain.model.GeneralException;
+import com.pirshayan.domain.model.InvalidDomainObjectException;
+import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSigner1AndSigner2CannotBeTheSameException;
+import com.pirshayan.domain.model.achtransferorder.exception.AchTransferOrderSignerIsNotSignCandidateException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 import com.pirshayan.domain.repository.exception.AchTransferOrderNotFoundException;
 import com.pirshayan.domain.repository.exception.FinanceOfficerRuleNotFoundException;
 import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
@@ -34,7 +34,7 @@ public class PresenterImpl implements SignAchTransferOrderPresenter {
 	}
 
 	@Override
-	public void presentFinanceOfficerRuleIsNotSignCandidateException(FinanceOfficerRuleIsNotSignCandidateException e) {
+	public void presentFinanceOfficerRuleIsNotSignCandidateException(AchTransferOrderSignerIsNotSignCandidateException e) {
 		response = Uni.createFrom().failure(handleException(Status.INVALID_ARGUMENT, e.getMessage(), e.getCode()));
 
 	}

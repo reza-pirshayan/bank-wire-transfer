@@ -3,8 +3,8 @@ package com.pirshayan.domain.model.financeofficerrule;
 import java.util.Objects;
 
 import com.pirshayan.domain.model.Validator;
-import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
-import com.pirshayan.domain.model.exception.financeofficer.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsFirstSignerException;
+import com.pirshayan.domain.model.financeofficerrule.exception.FinanceOfficerNotPrivilegedToSignAsSecondSignerException;
 
 /**
  * Aggregate Root representing the signing and sending privileges of a finance officer.

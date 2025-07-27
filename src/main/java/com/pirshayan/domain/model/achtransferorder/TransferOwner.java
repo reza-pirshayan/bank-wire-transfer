@@ -2,8 +2,8 @@ package com.pirshayan.domain.model.achtransferorder;
 
 import java.util.Objects;
 
+import com.pirshayan.domain.model.InvalidDomainObjectException;
 import com.pirshayan.domain.model.Validator;
-import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
 
 /**
  * Represents the owner of the ACH transfer order.

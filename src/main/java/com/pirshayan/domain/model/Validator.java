@@ -2,8 +2,6 @@ package com.pirshayan.domain.model;
 
 import java.math.BigInteger;
 
-import com.pirshayan.domain.model.exception.InvalidDomainObjectException;
-
 public interface Validator {
 	public static final Long MIN_TRANSFER_AMOUNT = 10001L;
 	public static final Long MAX_TRANSFER_AMOUNT = 50000000000L;

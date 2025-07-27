@@ -1,7 +1,7 @@
 package com.pirshayan.domain.repository.exception;
 
+import com.pirshayan.domain.model.GeneralException;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderId;
-import com.pirshayan.domain.model.exception.GeneralException;
 
 public class AchTransferOrderNotFoundException extends GeneralException {
 

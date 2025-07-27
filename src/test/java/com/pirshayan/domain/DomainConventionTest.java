@@ -25,7 +25,7 @@ public class DomainConventionTest {
 	// outside their package boundary.
 	@ArchTest
 	static ArchRule domain_models_except_ids_and_aggregateRoots_must_be_package_private = classes().that()
-			.resideInAnyPackage("com.pirshayan.domain.model..").and().resideOutsideOfPackage("..exception..").and()
+			.resideInAnyPackage("com.pirshayan.domain.model..").and().haveSimpleNameNotEndingWith("Exception").and()
 			.haveSimpleNameNotEndingWith("Id").and().haveSimpleNameNotEndingWith("AggregateRoot").and()
 			.haveSimpleNameNotContaining("Builder").and().doNotHaveSimpleName("Validator").should().bePackagePrivate()
 			.because("Entities and value objects inside an agrregate must be package private to enforce encapsulation");

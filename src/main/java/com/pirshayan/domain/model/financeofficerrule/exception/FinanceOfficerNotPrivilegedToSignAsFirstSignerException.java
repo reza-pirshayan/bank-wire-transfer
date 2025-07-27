@@ -1,6 +1,6 @@
-package com.pirshayan.domain.model.exception.financeofficer;
+package com.pirshayan.domain.model.financeofficerrule.exception;
 
-import com.pirshayan.domain.model.exception.GeneralException;
+import com.pirshayan.domain.model.GeneralException;
 
 public class FinanceOfficerNotPrivilegedToSignAsFirstSignerException extends GeneralException {
 	private static final long serialVersionUID = 1L;
@@ -9,7 +9,7 @@ public class FinanceOfficerNotPrivilegedToSignAsFirstSignerException extends Gen
 
 	public FinanceOfficerNotPrivilegedToSignAsFirstSignerException(boolean isAllowedToSignAsFirst,
 			Long maxFirstSignAmount) {
-		super("Paymnet-103002", "Finance Officer not privileged to sign as the first signer");
+		super("Paymnet-101001", "Finance Officer not privileged to sign as the first signer");
 		this.isAllowedToSignAsFirst = isAllowedToSignAsFirst;
 		this.maxFirstSignAmount = maxFirstSignAmount;
 	}

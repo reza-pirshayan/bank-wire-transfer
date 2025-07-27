@@ -1,4 +1,4 @@
-package com.pirshayan.domain.model.exception;
+package com.pirshayan.domain.model;
 
 public class InvalidDomainObjectException extends GeneralException {
     private static final long serialVersionUID = 1L;

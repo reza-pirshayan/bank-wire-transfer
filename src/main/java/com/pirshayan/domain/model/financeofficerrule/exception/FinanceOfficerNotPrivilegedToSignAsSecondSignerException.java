@@ -1,6 +1,6 @@
-package com.pirshayan.domain.model.exception.financeofficer;
+package com.pirshayan.domain.model.financeofficerrule.exception;
 
-import com.pirshayan.domain.model.exception.GeneralException;
+import com.pirshayan.domain.model.GeneralException;
 
 public class FinanceOfficerNotPrivilegedToSignAsSecondSignerException extends GeneralException {
 	private static final long serialVersionUID = 1L;
@@ -9,7 +9,7 @@ public class FinanceOfficerNotPrivilegedToSignAsSecondSignerException extends Ge
 
 	public FinanceOfficerNotPrivilegedToSignAsSecondSignerException(boolean isAllowedToSignAsSecond,
 			Long maxSecondSignAmount) {
-		super("Paymnet-103002", "Finance Officer not privileged to sign as the second signer");
+		super("Paymnet-102002", "Finance Officer not privileged to sign as the second signer");
 		this.isAllowedToSignAsSecond = isAllowedToSignAsSecond;
 		this.maxSecondSignAmount = maxSecondSignAmount;
 	}

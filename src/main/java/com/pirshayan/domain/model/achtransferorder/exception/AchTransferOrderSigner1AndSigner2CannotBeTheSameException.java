@@ -1,14 +1,14 @@
-package com.pirshayan.domain.model.exception.achtransferorder;
+package com.pirshayan.domain.model.achtransferorder.exception;
 
+import com.pirshayan.domain.model.GeneralException;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
-import com.pirshayan.domain.model.exception.GeneralException;
 
 public class AchTransferOrderSigner1AndSigner2CannotBeTheSameException extends GeneralException {
 	private static final long serialVersionUID = 1L;
 	private final AchTransferOrderAggregateRoot achTransferOrder;
 
 	public AchTransferOrderSigner1AndSigner2CannotBeTheSameException(AchTransferOrderAggregateRoot achTransferOrder) {
-		super("Payment-104001", "Signer1 and Signer2 cannot be the same");
+		super("Payment-101001", "Signer1 and Signer2 cannot be the same");
 		this.achTransferOrder = achTransferOrder;
 	}
 
