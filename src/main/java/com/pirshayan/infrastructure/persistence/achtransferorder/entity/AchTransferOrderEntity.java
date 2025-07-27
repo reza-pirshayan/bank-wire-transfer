@@ -55,7 +55,7 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 	private String transferPayId;
 
 	@Column(name = "status", columnDefinition = "NUMBER", nullable = false)
-	private Integer status;
+	private AchTransferOrderPersistenceStatus status;
 
 	@Transient
 	private FirstSignatureEntity firstSignatureEntity;
@@ -76,7 +76,7 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 			LocalDate dateOfIssue, String destinationIban, String accountOwnerNationalCode, String accountOwnerName,
 			String accountOwnerPersonType, String accountOwnerMobileNumber, String transferOwnerNationalCode,
 			String transferOwnerName, Integer checksum, String transerDescriprion, String transferPayId,
-			Integer status) {
+			AchTransferOrderPersistenceStatus status) {
 		super(id);
 		this.receivedDateTime = receivedDateTime;
 		this.transferNo = transferNo;
@@ -207,11 +207,11 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 		this.transferPayId = transferPayId;
 	}
 
-	public Integer getStatus() {
+	public AchTransferOrderPersistenceStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(AchTransferOrderPersistenceStatus status) {
 		this.status = status;
 	}
 

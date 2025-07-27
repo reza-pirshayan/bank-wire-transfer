@@ -9,13 +9,13 @@ import com.pirshayan.domain.repository.AchTransferOrderAggregateRepository;
 import com.pirshayan.domain.repository.exception.AchTransferOrderNotFoundException;
 import com.pirshayan.domain.repository.exception.InconsistentAchTransferOrderException;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderEntity;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderPersistenceStatus;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.FirstSignatureEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.FirstSignerCandidateEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.SecondSignatureEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.SecondSignerCandidateEntity;
-import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.PendingFirstSignatureAchTransferOrderMapper;
-import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.PendingSecondSignatureAchTransferOrderMapper;
-import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.PendingSendAchTransferOrderMapper;
+import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.AchTransferOrderMapper;
+import com.pirshayan.infrastructure.persistence.achtransferorder.mapper.AchTransferOrderMapperHandler;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -28,18 +28,21 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 	private final SecondSignatureEntityRepository secondSignatureEntityRepository;
 	private final FirstSignerCandidateEntityRepository firstSignerCandidateEntityRepository;
 	private final SecondSignerCandidateEntityRepository secondSignerCandidateEntityRepository;
+	private final AchTransferOrderMapperHandler achTransferOrderMapperHandler;
 	private final EntityManager em;
 
 	public AchTransferOrderAggregateRepositoryImpl(AchTransferOrderEntityRepository achTransferOrderEntityRepository,
 			FirstSignatureEntityRepository firstSignatureEntityRepository,
 			SecondSignatureEntityRepository secondSignatureEntityRepository,
 			FirstSignerCandidateEntityRepository firstSignerCandidateEntityRepository,
-			SecondSignerCandidateEntityRepository secondSignerCandidateEntityRepository, EntityManager em) {
+			SecondSignerCandidateEntityRepository secondSignerCandidateEntityRepository,
+			AchTransferOrderMapperHandler achTransferOrderMapperHandler, EntityManager em) {
 		this.achTransferOrderEntityRepository = achTransferOrderEntityRepository;
 		this.firstSignatureEntityRepository = firstSignatureEntityRepository;
 		this.secondSignatureEntityRepository = secondSignatureEntityRepository;
 		this.firstSignerCandidateEntityRepository = firstSignerCandidateEntityRepository;
 		this.secondSignerCandidateEntityRepository = secondSignerCandidateEntityRepository;
+		this.achTransferOrderMapperHandler = achTransferOrderMapperHandler;
 		this.em = em;
 	}
 
@@ -53,49 +56,46 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 		// Defensive check: ensure the input parameter is not null
 		if (achTransferOrderId == null) {
 			throw new IllegalArgumentException(
-				"AchTransferOrderAggregateRepositoryImpl.findById cannot accept null parameter");
+					"AchTransferOrderAggregateRepositoryImpl.findById cannot accept null parameter");
 		}
 
 		// Retrieve the main ACH transfer order entity from the database
 		AchTransferOrderEntity achTransferOrderEntity = achTransferOrderEntityRepository
-			.findByIdOptional(achTransferOrderId.getId())
-			.orElseThrow(() -> new AchTransferOrderNotFoundException(achTransferOrderId));
+				.findByIdOptional(achTransferOrderId.getId())
+				.orElseThrow(() -> new AchTransferOrderNotFoundException(achTransferOrderId));
 
 		// Load associated signer candidate lists (first and second) into the entity
-		achTransferOrderEntity.setFirstSignerCandidateEntities(
-			firstSignerCandidateEntityRepository.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId())
-		);
-		achTransferOrderEntity.setSecondSignerCandidateEntities(
-			secondSignerCandidateEntityRepository.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId())
-		);
+		achTransferOrderEntity.setFirstSignerCandidateEntities(firstSignerCandidateEntityRepository
+				.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
+		achTransferOrderEntity.setSecondSignerCandidateEntities(secondSignerCandidateEntityRepository
+				.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
+
+		AchTransferOrderMapper achTransferOrderMapper = achTransferOrderMapperHandler.getMapper(achTransferOrderEntity);
 
 		// Convert to domain model based on current status
 		switch (achTransferOrderEntity.getStatus()) {
 
-			// 0 = Pending first signature
-			case 0 -> {
-				return PendingFirstSignatureAchTransferOrderMapper.toModel(achTransferOrderEntity);
-			}
+		case PENDING_FIRST_SIGNATURE -> {
+			return achTransferOrderMapper.toModel(achTransferOrderEntity);
+		}
 
-			// 1 = Pending second signature
-			case 1 -> {
-				FirstSignatureEntity firstSignatureEntity = firstSignatureEntityRepository
+		case PENDING_SECOND_SIGNATURE -> {
+			FirstSignatureEntity firstSignatureEntity = firstSignatureEntityRepository
 					.findByIdOptional(achTransferOrderId.getId())
 					.orElseThrow(() -> new InconsistentAchTransferOrderException(achTransferOrderId, 1));
-				return PendingSecondSignatureAchTransferOrderMapper.toModel(firstSignatureEntity);
-			}
+			return achTransferOrderMapper.toModel(firstSignatureEntity);
+		}
 
-			// 2 = Pending send
-			case 2 -> {
-				SecondSignatureEntity secondSignatureEntity = secondSignatureEntityRepository
+		case PENDING_SEND -> {
+			SecondSignatureEntity secondSignatureEntity = secondSignatureEntityRepository
 					.findByIdOptional(achTransferOrderId.getId())
 					.orElseThrow(() -> new InconsistentAchTransferOrderException(achTransferOrderId, 2));
-				return PendingSendAchTransferOrderMapper.toModel(secondSignatureEntity);
-			}
+			return achTransferOrderMapper.toModel(secondSignatureEntity);
+		}
 
-			// Handle unexpected status codes
-			default -> throw new IllegalStateException(String.format(
-				"Unhandled AchTransferOrderAggregateRepository.findById for ACH transfer order with ID [ %s ] and status [ %d ]",
+		// Handle unexpected status codes
+		default -> throw new IllegalStateException(String.format(
+				"Unhandled AchTransferOrderAggregateRepository.findById for ACH transfer order with ID [ %s ] and status [ %s ]",
 				achTransferOrderEntity.getOrderId(), achTransferOrderEntity.getStatus()));
 		}
 	}
@@ -118,8 +118,11 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 							achTransferOrderAggregateRoot.getStatusString()));
 		}
 
+		AchTransferOrderMapper achTransferOrderMapper = achTransferOrderMapperHandler
+				.getMapper(achTransferOrderAggregateRoot);
+
 		// Convert the domain model to a JPA entity and persist it
-		AchTransferOrderEntity achTransferOrderEntity = PendingFirstSignatureAchTransferOrderMapper
+		AchTransferOrderEntity achTransferOrderEntity = (AchTransferOrderEntity) achTransferOrderMapper
 				.toEntity(achTransferOrderAggregateRoot);
 		achTransferOrderEntityRepository.persist(achTransferOrderEntity);
 
@@ -142,6 +145,9 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 	public void update(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
 		AchTransferOrderId achTransferOrderId = achTransferOrderAggregateRoot.getAchTransferOrderId();
 
+		AchTransferOrderMapper achTransferOrderMapper = achTransferOrderMapperHandler
+				.getMapper(achTransferOrderAggregateRoot);
+
 		// Retrieve the persisted ACH transfer order entity from the database.
 		AchTransferOrderEntity achTransferOrderEntity = achTransferOrderEntityRepository
 				.findByIdOptional(achTransferOrderId.getId())
@@ -149,11 +155,12 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 		// Case 1: Update the transfer order after the first signature is collected
 		if (achTransferOrderAggregateRoot.isPendingSecondSignature()) {
-			achTransferOrderEntity.setStatus(1); // Update status to "Pending Second Signature"
+			achTransferOrderEntity.setStatus(AchTransferOrderPersistenceStatus.PENDING_SECOND_SIGNATURE);
 
 			// Persist the first signature to the database
-			FirstSignatureEntity firstSignatureEntity = PendingSecondSignatureAchTransferOrderMapper
-					.toEntity(achTransferOrderAggregateRoot, achTransferOrderEntity);
+			FirstSignatureEntity firstSignatureEntity = (FirstSignatureEntity) achTransferOrderMapper
+					.toEntity(achTransferOrderAggregateRoot);
+			firstSignatureEntity.setAchTransferOrderEntity(achTransferOrderEntity);
 			firstSignatureEntityRepository.persist(firstSignatureEntity);
 
 			// Remove existing signer candidate records (both first and second)
@@ -171,7 +178,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 		// Case 2: Update the transfer order after the second signature is collected
 		if (achTransferOrderAggregateRoot.isPendingSend()) {
-			achTransferOrderEntity.setStatus(2); // Update status to "Ready to Send"
+			achTransferOrderEntity.setStatus(AchTransferOrderPersistenceStatus.PENDING_SEND);
 
 			// Load the previously saved first signature
 			FirstSignatureEntity firstSignatureEntity = firstSignatureEntityRepository
@@ -179,20 +186,15 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 					.orElseThrow(() -> new InconsistentAchTransferOrderException(achTransferOrderId, 2));
 
 			// Create and persist the second signature
-			SecondSignatureEntity secondSignatureEntity = PendingSendAchTransferOrderMapper
-					.toEntity(achTransferOrderAggregateRoot, firstSignatureEntity);
+			SecondSignatureEntity secondSignatureEntity = (SecondSignatureEntity) achTransferOrderMapper
+					.toEntity(achTransferOrderAggregateRoot);
+			secondSignatureEntity.setFirstSignatureEntity(firstSignatureEntity);
 			secondSignatureEntityRepository.persist(secondSignatureEntity);
 
 			// Remove all second signer candidates (approval is completed)
 			secondSignerCandidateEntityRepository.deleteByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId());
-
-			return;
 		}
 
-		// Fallback for any unrecognized or inconsistent status
-		throw new IllegalStateException(String.format(
-				"Unhandled AchTransferOrderRepository.update for ACH transfer order with ID [ %s ] and status [ %d ]",
-				achTransferOrderEntity.getOrderId(), achTransferOrderEntity.getStatus()));
 	}
 
 	@Override
@@ -209,7 +211,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			return;
 		}
 
-		if (achTransferOrderEntityOptional.get().getStatus() == 0) {
+		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_FIRST_SIGNATURE) {
 
 			secondSignerCandidateEntityRepository.delete(
 					"DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
@@ -225,7 +227,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			return;
 		}
 
-		if (achTransferOrderEntityOptional.get().getStatus() == 1) {
+		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_SECOND_SIGNATURE) {
 
 			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.id = ?1",
 					achTransferOrderId.getId());
@@ -240,7 +242,7 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			return;
 		}
 
-		if (achTransferOrderEntityOptional.get().getStatus() == 2) {
+		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_SEND) {
 
 			secondSignatureEntityRepository.delete("DELETE FROM SecondSignatureEntity s WHERE s.id = ?1",
 					achTransferOrderId.getId());
@@ -250,7 +252,11 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
 					achTransferOrderId.getId());
+			
+			return;
 
 		}
+		
+		throw new IllegalStateException("ACH transfer order with ID [ %s ] cannot be deleted");
 	}
 }

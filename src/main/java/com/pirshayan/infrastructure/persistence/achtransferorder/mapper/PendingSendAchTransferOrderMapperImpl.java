@@ -5,16 +5,28 @@ import java.util.List;
 
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderAbstract;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.FirstSignatureEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.SecondSignatureEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.SignatureInfo;
 
-public class PendingSendAchTransferOrderMapper {
-	public static AchTransferOrderAggregateRoot toModel(SecondSignatureEntity secondSignatureEntity) {
-		if (secondSignatureEntity == null) {
+import jakarta.inject.Singleton;
+
+@Singleton
+public class PendingSendAchTransferOrderMapperImpl implements AchTransferOrderMapper {
+	public AchTransferOrderAggregateRoot toModel(AchTransferOrderAbstract entity) {
+		if (entity == null) {
 			throw new IllegalArgumentException("PendingSendAchTransferOrderMapper.toModel cannot accept null input");
 		}
+
+		if (!(entity instanceof SecondSignatureEntity)) {
+			throw new IllegalArgumentException(
+					String.format("PendingSendSignatureAchTransferOrderMapper.toModel cannot accept input of type %s",
+							entity.getClass()));
+		}
+
+		SecondSignatureEntity secondSignatureEntity = (SecondSignatureEntity) entity;
 
 		FirstSignatureEntity firstSignatureEntity = secondSignatureEntity.getFirstSignatureEntity();
 		if (firstSignatureEntity == null) {
@@ -35,7 +47,7 @@ public class PendingSendAchTransferOrderMapper {
 
 		FinanceOfficerRuleId firstSignerRuleId = new FinanceOfficerRuleId(
 				firstSignatureEntity.getSignatureInfo().getSignerId());
-		
+
 		FinanceOfficerRuleId secondSignerRuleId = new FinanceOfficerRuleId(
 				secondSignatureEntity.getSignatureInfo().getSignerId());
 
@@ -55,23 +67,19 @@ public class PendingSendAchTransferOrderMapper {
 		return pendingSecondSignatureAchTransferOrder.signAsSecond(secondSignerRuleId, secondSignDateTime);
 	}
 
-	public static SecondSignatureEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot,
-			FirstSignatureEntity firstSignatureEntity) {
+	public SecondSignatureEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
 
 		if (achTransferOrderAggregateRoot == null) {
 			throw new IllegalArgumentException(
 					"PendingSendSignatureAchTransferOrderMapper.toEntity cannot accept null input");
 		}
 
-		if (firstSignatureEntity == null) {
-			throw new IllegalArgumentException(
-					"PendingSendSignatureAchTransferOrderMapper.toEntity cannot accept null input");
-		}
-
-		String id = firstSignatureEntity.getOrderId();
+		String id = achTransferOrderAggregateRoot.getAchTransferOrderId().getId();
 		Long signatureDateTime = achTransferOrderAggregateRoot.getSecondSignatureDateTime().get();
 		Long signerId = achTransferOrderAggregateRoot.getSecondSignerRuleId().get().getId();
 		SignatureInfo signatureInfo = new SignatureInfo(signatureDateTime, signerId);
-		return new SecondSignatureEntity(id, firstSignatureEntity, signatureInfo);
+
+		FirstSignatureEntity dummy = new FirstSignatureEntity();
+		return new SecondSignatureEntity(id, dummy, signatureInfo);
 	}
 }

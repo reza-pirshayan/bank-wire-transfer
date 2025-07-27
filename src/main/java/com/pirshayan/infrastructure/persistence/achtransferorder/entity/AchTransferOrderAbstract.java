@@ -10,11 +10,10 @@ public abstract class AchTransferOrderAbstract {
 	@Column(name = "order_id", length = 15)
 	private String orderId;
 
-	public AchTransferOrderAbstract() {
+	protected AchTransferOrderAbstract() {
 	}
 
-	public AchTransferOrderAbstract(String orderId) {
-		super();
+	protected AchTransferOrderAbstract(String orderId) {
 		this.orderId = orderId;
 	}
 

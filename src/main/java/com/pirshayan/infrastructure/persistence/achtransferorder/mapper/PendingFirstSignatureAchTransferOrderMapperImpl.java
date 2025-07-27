@@ -1,14 +1,32 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.mapper;
 
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderAbstract;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderEntity;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderPersistenceStatus;
 
-public class PendingFirstSignatureAchTransferOrderMapper {
+import jakarta.inject.Singleton;
 
-	public static AchTransferOrderAggregateRoot toModel(AchTransferOrderEntity achTransferOrderEntity) {
-		if (achTransferOrderEntity.getStatus() != 0) {
+@Singleton
+public class PendingFirstSignatureAchTransferOrderMapperImpl implements AchTransferOrderMapper {
+
+	public AchTransferOrderAggregateRoot toModel(AchTransferOrderAbstract entity) {
+		if (entity == null) {
+			throw new IllegalArgumentException(
+					"PendingFirstSignatureAchTransferOrderMapper.toModel cannot accept null input");
+		}
+
+		if (!(entity instanceof AchTransferOrderEntity)) {
+			throw new IllegalArgumentException(
+					String.format("PendingFirstSignatureAchTransferOrderMapper.toModel cannot accept input of type %s",
+							entity.getClass()));
+		}
+		
+		AchTransferOrderEntity achTransferOrderEntity = (AchTransferOrderEntity) entity;
+		
+		if (achTransferOrderEntity.getStatus() != AchTransferOrderPersistenceStatus.PENDING_FIRST_SIGNATURE) {
 			throw new IllegalStateException(String.format(
-					"ACH transfer order EINTITY with ID [ %s ] and status [ %d ] cannot mapped to PendigFirstSignature Aggregate",
+					"ACH transfer order EINTITY with ID [ %s ] and status [ %s ] cannot mapped to PendigFirstSignature Aggregate",
 					achTransferOrderEntity.getOrderId(), achTransferOrderEntity.getStatus()));
 		}
 
@@ -27,7 +45,7 @@ public class PendingFirstSignatureAchTransferOrderMapper {
 		return AchTransferOrderMappingHelper.createBuilderFrom(achTransferOrderEntity).build();
 	}
 
-	public static AchTransferOrderEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
+	public AchTransferOrderEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
 		if (achTransferOrderAggregateRoot == null) {
 			throw new IllegalArgumentException(
 					"PendingFirstSignatureAchTransferOrderMapper.toModel cannot accept null input");
@@ -42,4 +60,5 @@ public class PendingFirstSignatureAchTransferOrderMapper {
 
 		return AchTransferOrderMappingHelper.createEntityFrom(achTransferOrderAggregateRoot);
 	}
+
 }

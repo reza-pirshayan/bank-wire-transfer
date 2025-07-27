@@ -6,6 +6,7 @@ import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderId;
 import com.pirshayan.domain.model.financeofficerrule.FinanceOfficerRuleId;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderEntity;
+import com.pirshayan.infrastructure.persistence.achtransferorder.entity.AchTransferOrderPersistenceStatus;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.FirstSignerCandidateEntity;
 import com.pirshayan.infrastructure.persistence.achtransferorder.entity.SecondSignerCandidateEntity;
 
@@ -25,7 +26,7 @@ public class AchTransferOrderMappingHelper {
 	}
 
 	public static AchTransferOrderEntity createEntityFrom(AchTransferOrderAggregateRoot root) {
-		String status = mapStatus(root);
+		AchTransferOrderPersistenceStatus status = mapStatus(root);
 
 		return new AchTransferOrderEntity(root.getAchTransferOrderId().getId(), root.getReceivedDateTime(),
 				root.getTransferId(), root.getTransferAmount(), root.getTransferDateOfIssue(),
@@ -34,7 +35,7 @@ public class AchTransferOrderMappingHelper {
 				root.getTransferDestinationBankAccountOwnerPersonTypeString(),
 				root.getTransferDestinationBankAccountOwnerMobileNumber().orElse(null), root.getTransferOwnerId(),
 				root.getTransferOwnerName(), root.getTransferChecksum(), root.getTransferDescription().orElse(null),
-				root.getTransferPayId().orElse(null), Integer.parseInt(status));
+				root.getTransferPayId().orElse(null), status);
 
 	}
 
@@ -88,17 +89,17 @@ public class AchTransferOrderMappingHelper {
 		}
 	}
 
-	private static String mapStatus(AchTransferOrderAggregateRoot root) {
+	private static AchTransferOrderPersistenceStatus mapStatus(AchTransferOrderAggregateRoot root) {
 		if (root.isPendingFirstSignature())
-			return "0";
+			return AchTransferOrderPersistenceStatus.PENDING_FIRST_SIGNATURE;
 		if (root.isPendingSecondSignature())
-			return "1";
+			return AchTransferOrderPersistenceStatus.PENDING_SECOND_SIGNATURE;
 		if (root.isPendingSend())
-			return "2";
+			return AchTransferOrderPersistenceStatus.PENDING_SEND;
 		if (root.isCancelled())
-			return "-1";
+			return AchTransferOrderPersistenceStatus.CANCELLED;
 
-		throw new IllegalStateException(String.format("ACH transfer order with ID [%s] has unknown status: %s",
+		throw new IllegalStateException(String.format("ACH transfer order with ID [ %s ] has unknown status: %s",
 				root.getAchTransferOrderId().getId(), root.getStatusString()));
 	}
 
