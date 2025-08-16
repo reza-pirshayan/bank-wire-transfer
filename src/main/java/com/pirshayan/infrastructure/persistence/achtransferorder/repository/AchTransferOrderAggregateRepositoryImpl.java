@@ -1,5 +1,6 @@
 package com.pirshayan.infrastructure.persistence.achtransferorder.repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,22 +65,26 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 				.findByIdOptional(achTransferOrderId.getId())
 				.orElseThrow(() -> new AchTransferOrderNotFoundException(achTransferOrderId));
 
-		// Load associated signer candidate lists (first and second) into the entity
-		achTransferOrderEntity.setFirstSignerCandidateEntities(firstSignerCandidateEntityRepository
-				.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
-		achTransferOrderEntity.setSecondSignerCandidateEntities(secondSignerCandidateEntityRepository
-				.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
-
 		AchTransferOrderMapper achTransferOrderMapper = achTransferOrderMapperHandler.getMapper(achTransferOrderEntity);
 
 		// Convert to domain model based on current status
 		switch (achTransferOrderEntity.getStatus()) {
 
 		case PENDING_FIRST_SIGNATURE -> {
+			// Load associated signer candidate lists (first and second) into the entity
+			achTransferOrderEntity.setFirstSignerCandidateEntities(firstSignerCandidateEntityRepository
+					.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
+			achTransferOrderEntity.setSecondSignerCandidateEntities(secondSignerCandidateEntityRepository
+					.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
+
 			return achTransferOrderMapper.toModel(achTransferOrderEntity);
 		}
 
 		case PENDING_SECOND_SIGNATURE -> {
+			// Load second signer candidate list into the entity
+			achTransferOrderEntity.setFirstSignerCandidateEntities(Collections.emptyList());
+			achTransferOrderEntity.setSecondSignerCandidateEntities(secondSignerCandidateEntityRepository
+					.findByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId()));
 			FirstSignatureEntity firstSignatureEntity = firstSignatureEntityRepository
 					.findByIdOptional(achTransferOrderId.getId())
 					.orElseThrow(() -> new InconsistentAchTransferOrderException(achTransferOrderId, 1));
@@ -87,6 +92,8 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 		}
 
 		case PENDING_BANK_DISPATCH -> {
+			achTransferOrderEntity.setFirstSignerCandidateEntities(Collections.emptyList());
+			achTransferOrderEntity.setSecondSignerCandidateEntities(Collections.emptyList());
 			SecondSignatureEntity secondSignatureEntity = secondSignatureEntityRepository
 					.findByIdOptional(achTransferOrderId.getId())
 					.orElseThrow(() -> new InconsistentAchTransferOrderException(achTransferOrderId, 2));
@@ -193,7 +200,14 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 
 			// Remove all second signer candidates (approval is completed)
 			secondSignerCandidateEntityRepository.deleteByAchTransferOrderEntityId(achTransferOrderEntity.getOrderId());
+			
+			return;
 		}
+
+		throw new IllegalStateException(
+				String.format("Update operation is not supported for ACH transfer order with ID [%s] and status [%s]",
+						achTransferOrderAggregateRoot.getAchTransferOrderId().getId(),
+						achTransferOrderAggregateRoot.getStatusString()));
 
 	}
 
@@ -211,52 +225,52 @@ public class AchTransferOrderAggregateRepositoryImpl implements AchTransferOrder
 			return;
 		}
 
-		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_FIRST_SIGNATURE) {
+		if (achTransferOrderEntityOptional.get()
+				.getStatus() == AchTransferOrderPersistenceStatus.PENDING_FIRST_SIGNATURE) {
 
-			secondSignerCandidateEntityRepository.delete(
-					"DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
-					achTransferOrderId.getId());
-
-			firstSignerCandidateEntityRepository.delete(
-					"DELETE FROM FirstSignerCandidateEntity f WHERE f.achTransferOrderEntity.orderId = ?1",
-					achTransferOrderId.getId());
-
-			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
-					achTransferOrderId.getId());
-
-			return;
-		}
-
-		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_SECOND_SIGNATURE) {
-
-			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.id = ?1",
-					achTransferOrderId.getId());
-
-			secondSignerCandidateEntityRepository.delete(
-					"DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
-					achTransferOrderId.getId());
-
-			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
-					achTransferOrderId.getId());
-
-			return;
-		}
-
-		if (achTransferOrderEntityOptional.get().getStatus() == AchTransferOrderPersistenceStatus.PENDING_BANK_DISPATCH) {
-
-			secondSignatureEntityRepository.delete("DELETE FROM SecondSignatureEntity s WHERE s.id = ?1",
-					achTransferOrderId.getId());
-
-			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.id = ?1",
-					achTransferOrderId.getId());
-
-			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+			achTransferOrderEntityRepository.delete("DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
 					achTransferOrderId.getId());
 			
+			achTransferOrderEntityRepository.delete("DELETE FROM FirstSignerCandidateEntity f WHERE f.achTransferOrderEntity.orderId = ?1",
+					achTransferOrderId.getId());
+			
+			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+					achTransferOrderId.getId());
+
+			return;
+		}
+
+		if (achTransferOrderEntityOptional.get()
+				.getStatus() == AchTransferOrderPersistenceStatus.PENDING_SECOND_SIGNATURE) {
+
+			achTransferOrderEntityRepository.delete("DELETE FROM SecondSignerCandidateEntity s WHERE s.achTransferOrderEntity.orderId = ?1",
+					achTransferOrderId.getId());
+			
+			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.orderId = ?1",
+					achTransferOrderId.getId());
+
+			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+					achTransferOrderId.getId());
+
+			return;
+		}
+
+		if (achTransferOrderEntityOptional.get()
+				.getStatus() == AchTransferOrderPersistenceStatus.PENDING_BANK_DISPATCH) {
+
+			secondSignatureEntityRepository.delete("DELETE FROM SecondSignatureEntity s WHERE s.orderId = ?1",
+					achTransferOrderId.getId());
+
+			firstSignatureEntityRepository.delete("DELETE FROM FirstSignatureEntity f WHERE f.orderId = ?1",
+					achTransferOrderId.getId());
+
+			achTransferOrderEntityRepository.delete("DELETE FROM AchTransferOrderEntity a WHERE a.orderId = ?1",
+					achTransferOrderId.getId());
+
 			return;
 
 		}
-		
+
 		throw new IllegalStateException("ACH transfer order with ID [ %s ] cannot be deleted");
 	}
 }

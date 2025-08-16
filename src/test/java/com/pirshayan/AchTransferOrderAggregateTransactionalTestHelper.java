@@ -39,14 +39,14 @@ public class AchTransferOrderAggregateTransactionalTestHelper {
 	@Transactional
 	public void createPendingSecondSignatureAchTransferOrder(AchTransferOrderId achTransferOrderId) {
 
-		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = achTransferOrderAggregateRepository
-				.findById(achTransferOrderId);
+		AchTransferOrderAggregateRoot pendingFirstSignatureAchTransferOrder = AchTransferOrderAggregateTestHelper
+				.buildPendingFirstSignatureAchTransferOrder(achTransferOrderId.getId());
+		achTransferOrderAggregateRepository.create(pendingFirstSignatureAchTransferOrder);
 		FinanceOfficerRuleId signerRuleId = new FinanceOfficerRuleId(1113005254L);
 		FinanceOfficerRuleAggregateRoot signerRule = financeOfficerRuleAggregateRepository.findById(signerRuleId);
 		AchTransferOrderAggregateRoot pendingSecondSignatureAchTransferOrder = achTransferOrderDomainService
 				.sign(signerRule, pendingFirstSignatureAchTransferOrder);
 		achTransferOrderAggregateRepository.update(pendingSecondSignatureAchTransferOrder);
-
 	}
 
 	@Transactional

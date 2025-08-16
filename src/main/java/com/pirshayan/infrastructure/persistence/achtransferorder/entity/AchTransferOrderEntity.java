@@ -58,9 +58,6 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 	private AchTransferOrderPersistenceStatus status;
 
 	@Transient
-	private FirstSignatureEntity firstSignatureEntity;
-
-	@Transient
 	private List<FirstSignerCandidateEntity> firstSignerCandidateEntities;
 
 	@Transient
@@ -213,14 +210,6 @@ public class AchTransferOrderEntity extends AchTransferOrderAbstract {
 
 	public void setStatus(AchTransferOrderPersistenceStatus status) {
 		this.status = status;
-	}
-
-	public FirstSignatureEntity getFirstSignatureEntity() {
-		return firstSignatureEntity;
-	}
-
-	public void setFirstSignatureEntity(FirstSignatureEntity firstSignatureEntity) {
-		this.firstSignatureEntity = firstSignatureEntity;
 	}
 
 	public List<FirstSignerCandidateEntity> getFirstSignerCandidateEntities() {

@@ -24,7 +24,7 @@ public class AchTransferOrderMapperHandler {
 		if (achTransferOrderEntity == null) {
 			throw new IllegalArgumentException("achTransferOrderEntity must not be null");
 		}
-		
+
 		switch (achTransferOrderEntity.getStatus()) {
 		case PENDING_FIRST_SIGNATURE -> {
 			return pendingFirstSignatureAchTransferOrderMapperImpl;
@@ -35,11 +35,10 @@ public class AchTransferOrderMapperHandler {
 		case PENDING_BANK_DISPATCH -> {
 			return pendingSendAchTransferOrderMapperImpl;
 		}
-		default -> {
-			throw new IllegalStateException(
-					String.format("ACH transfer order entity with ID [ %s ] and status [ %s ] cannot be mapped",
-							achTransferOrderEntity.getOrderId(), achTransferOrderEntity.getStatus()));
-		}
+		default -> throw new IllegalStateException(
+				String.format("ACH transfer order entity with ID [ %s ] and status [ %s ] cannot be mapped",
+						achTransferOrderEntity.getOrderId(), achTransferOrderEntity.getStatus()));
+
 		}
 	}
 
@@ -47,19 +46,19 @@ public class AchTransferOrderMapperHandler {
 		if (achTransferOrderAggregateRoot == null) {
 			throw new IllegalArgumentException("achTransferOrderAggregateRoot must not be null");
 		}
-		
+
 		if (achTransferOrderAggregateRoot.isPendingFirstSignature()) {
 			return pendingFirstSignatureAchTransferOrderMapperImpl;
 		}
-		
+
 		if (achTransferOrderAggregateRoot.isPendingSecondSignature()) {
 			return pendingSecondSignatureAchTransferOrderMapperImpl;
 		}
-		
+
 		if (achTransferOrderAggregateRoot.isPendingBankDispatch()) {
 			return pendingSendAchTransferOrderMapperImpl;
 		}
-		
+
 		throw new IllegalStateException(
 				String.format("ACH transfer order aggregate with ID [ %s ] and status [ %s ] cannot be mapped",
 						achTransferOrderAggregateRoot.getAchTransferOrderId().getId(),

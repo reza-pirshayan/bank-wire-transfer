@@ -54,33 +54,6 @@ public class PendingSecondSignatureAchTransferOrderMapperImpl implements AchTran
 				refinedSecondSignerCandidateIds);
 	}
 
-//	public static FirstSignatureEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot,
-//			AchTransferOrderEntity achTransferOrderEntity) {
-//
-//		if (achTransferOrderAggregateRoot == null) {
-//			throw new IllegalArgumentException(
-//					"PendingSecondSignatureAchTransferOrderMapper.toEntity cannot accept null input");
-//		}
-//
-//		if (achTransferOrderEntity == null) {
-//			throw new IllegalArgumentException(
-//					"PendingSecondSignatureAchTransferOrderMapper.toEntity cannot accept null input");
-//		}
-//
-//		if (!achTransferOrderAggregateRoot.isPendingSecondSignature()) {
-//			throw new IllegalStateException(String.format(
-//					"ACH transfer order aggregate with ID [ %s ] and status [ %s ] cannot mapped to persistence entity as pending second signature",
-//					achTransferOrderAggregateRoot.getAchTransferOrderId().getId(),
-//					achTransferOrderAggregateRoot.getStatusString()));
-//		}
-//
-//		String id = achTransferOrderAggregateRoot.getAchTransferOrderId().getId();
-//		Long signatureDateTime = achTransferOrderAggregateRoot.getFirstSignatureDateTime().get();
-//		Long signerId = achTransferOrderAggregateRoot.getFirstSignerRuleId().get().getId();
-//		SignatureInfo signatureInfo = new SignatureInfo(signatureDateTime, signerId);
-//		return new FirstSignatureEntity(id, achTransferOrderEntity, signatureInfo);
-//	}
-
 	public FirstSignatureEntity toEntity(AchTransferOrderAggregateRoot achTransferOrderAggregateRoot) {
 
 		if (achTransferOrderAggregateRoot == null) {

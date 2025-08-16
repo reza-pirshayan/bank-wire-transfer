@@ -54,11 +54,10 @@ class AchTransferOrderApplicationServiceTest {
 		String commandOrderId = "2025071200002";
 		AchTransferOrderId achTransferOrderId = new AchTransferOrderId(commandOrderId);
 		testHelper.deleteAchTransferOrder(achTransferOrderId);
-		testHelper.createPendingFirstSignatureAchTransferOrder(achTransferOrderId);
-		testHelper.clearPersistenceContext();
 		testHelper.createPendingSecondSignatureAchTransferOrder(achTransferOrderId);
 		testHelper.clearPersistenceContext();
-		SignAchTransferOrderCommand secondSigncommand = new SignAchTransferOrderCommand(commandSecondSignerRuleId, commandOrderId);
+		SignAchTransferOrderCommand secondSigncommand = new SignAchTransferOrderCommand(commandSecondSignerRuleId,
+				commandOrderId);
 
 		// Act
 		sut.sign(secondSigncommand);
@@ -66,7 +65,8 @@ class AchTransferOrderApplicationServiceTest {
 		// Assert
 		testHelper.clearPersistenceContext();
 		AchTransferOrderId achTransferOrderAggregateId = new AchTransferOrderId(commandOrderId);
-		AchTransferOrderAggregateRoot signedAchTransferOrder = testHelper.HydrateAchTransferOrder(achTransferOrderAggregateId);
+		AchTransferOrderAggregateRoot signedAchTransferOrder = testHelper
+				.HydrateAchTransferOrder(achTransferOrderAggregateId);
 		assertTrue(signedAchTransferOrder.isPendingBankDispatch());
 		assertTrue(signedAchTransferOrder.getSecondSignerRuleId().isPresent());
 		assertTrue(signedAchTransferOrder.getSecondSignatureDateTime().isPresent());
