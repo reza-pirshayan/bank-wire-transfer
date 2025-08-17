@@ -181,8 +181,7 @@ Represents a finance officer's signing permissions:
 ## Application Layer Components
 
 - `SignAchTransferOrderCommand`: input DTO  
-- `SignAchTransferOrderCommandHandler`: handles the command  
-- `SignAchTransferOrderApplicationService`: core logic for executing the use case  
+- `SignAchTransferOrderCommandHandler`: handles the command (core logic for executing the use case)
 - `SignAchTransferOrderPresenter`: interface for presenting success/failure
 
 ## Controller Layer (REST and gRPC)
