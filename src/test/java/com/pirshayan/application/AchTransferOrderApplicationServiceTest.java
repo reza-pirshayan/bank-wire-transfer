@@ -3,12 +3,17 @@ package com.pirshayan.application;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.pirshayan.AchTransferOrderAggregateTransactionalTestHelper;
 import com.pirshayan.application.command.SignAchTransferOrderCommand;
-import com.pirshayan.application.service.AchTransferOrderApplicationService;
+import com.pirshayan.application.handler.SignAchTransferOrderCommandHandler;
+import com.pirshayan.application.presenter.SignAchTransferOrderPresenter;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderAggregateRoot;
 import com.pirshayan.domain.model.achtransferorder.AchTransferOrderId;
 
@@ -21,7 +26,15 @@ class AchTransferOrderApplicationServiceTest {
 	AchTransferOrderAggregateTransactionalTestHelper testHelper;
 
 	@Inject
-	AchTransferOrderApplicationService sut;
+	SignAchTransferOrderCommandHandler sut;
+
+	@Mock
+	SignAchTransferOrderPresenter presenter;
+
+	@BeforeEach
+	void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
 
 	@Test
 	void sign_ach_transfer_order_with_status_pending_first_signature__should_be_successful() {
@@ -33,9 +46,10 @@ class AchTransferOrderApplicationServiceTest {
 		testHelper.deleteAchTransferOrder(achTransferOrderId);
 		testHelper.createPendingFirstSignatureAchTransferOrder(achTransferOrderId);
 		testHelper.clearPersistenceContext();
-		
+		doNothing().when(presenter).presentSuccess();
+
 		// Act
-		sut.sign(command);
+		sut.handle(command, presenter);
 
 		// Assert
 		AchTransferOrderAggregateRoot signedAchTransferOrder = testHelper.HydrateAchTransferOrder(achTransferOrderId);
@@ -56,11 +70,12 @@ class AchTransferOrderApplicationServiceTest {
 		testHelper.deleteAchTransferOrder(achTransferOrderId);
 		testHelper.createPendingSecondSignatureAchTransferOrder(achTransferOrderId);
 		testHelper.clearPersistenceContext();
-		SignAchTransferOrderCommand secondSigncommand = new SignAchTransferOrderCommand(commandSecondSignerRuleId,
+		SignAchTransferOrderCommand command = new SignAchTransferOrderCommand(commandSecondSignerRuleId,
 				commandOrderId);
-
+		doNothing().when(presenter).presentSuccess();
+		
 		// Act
-		sut.sign(secondSigncommand);
+		sut.handle(command, presenter);
 
 		// Assert
 		testHelper.clearPersistenceContext();
